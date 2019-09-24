@@ -36,5 +36,5 @@ export interface Struct {
 
 export interface Root {
 	structs: Struct[];
-	data: string;
+	root: string;
 }

@@ -30,7 +30,7 @@ Main {
 	f32 myfloat;
 };
 
-data = Main;
+root = Main;
 
 `;
 

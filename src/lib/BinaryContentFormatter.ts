@@ -177,6 +177,6 @@ export class BinaryContentFormatter {
 		this._offset = 0;
 		this._nodeStack = [];
 		this._simpleValuesByStructIdentifier = Object.create(null);
-		return this._readStruct(this._structsByName[this._rules.data]);
+		return this._readStruct(this._structsByName[this._rules.root]);
 	}
 };

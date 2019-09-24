@@ -57,8 +57,8 @@ export class Validator {
 				t.types[field.kind] = field;
 			}
 		}
-		if (!structsByName[this._input.data]) {
-			throw new Error(`Struct '${this._input.data}' not found.`);
+		if (!structsByName[this._input.root]) {
+			throw new Error(`Struct '${this._input.root}' not found.`);
 		}
 	}
 };

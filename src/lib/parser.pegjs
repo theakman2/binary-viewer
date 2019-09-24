@@ -1,7 +1,7 @@
-start = ws s:StructStatement* ws d:DataStatement ws {
+start = ws s:StructStatement* ws d:RootStatement ws {
 	return {
 		structs: s,
-		data: d,
+		root: d,
 	};
 }
 
@@ -57,7 +57,7 @@ StructStatement = t:Struct ws ";" ws {
 	return t;
 }
 
-DataStatement = "data" ws "=" ws i:Identifier ws ";" ws {
+RootStatement = "root" ws "=" ws i:Identifier ws ";" ws {
 	return i;
 }
 
@@ -67,6 +67,6 @@ Integer = v:[0-9]+ {
 
 FieldStatement = SingleSimpleVarStatement / SingleStructVarStatement / ArraySimpleVarStatement / ArrayStructVarStatement
 
-Statement = FieldStatement / StructStatement / DataStatement
+Statement = FieldStatement / StructStatement / RootStatement
 
 DataType = "u8" / "u16" / "u32" / "i8" / "i16" / "i32" / "f32" / "f64" / "norm"
