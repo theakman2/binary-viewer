@@ -1,13 +1,13 @@
 export type DataType = "u8" | "u16" | "u32" | "i8" | "i16" | "i32" | "f32" | "f64" | "norm";
 
-export interface SimpleVarStatement {
-	type: 'SimpleVarStatement';
+export interface SingleSimpleVarStatement {
+	type: 'SingleSimpleVarStatement';
 	kind: DataType;
 	identifier: string;
 }
 
-export interface StructVarStatement {
-	type: 'StructVarStatement';
+export interface SingleStructVarStatement {
+	type: 'SingleStructVarStatement';
 	kind: string;
 	identifier: string;
 }
@@ -26,7 +26,7 @@ export interface ArrayStructVarStatement {
 	count: number | string;
 }
 
-export type FieldStatement = SimpleVarStatement | StructVarStatement | ArraySimpleVarStatement | ArrayStructVarStatement;
+export type FieldStatement = SingleSimpleVarStatement | SingleStructVarStatement | ArraySimpleVarStatement | ArrayStructVarStatement;
 
 export interface Struct {
 	type: "struct";

@@ -2,7 +2,7 @@ import * as FormatStringAst from "./FormatStringAst";
 
 export type Type = "simple" | "struct";
 
-export interface NonArraySimpleNode {
+export interface SingleSimpleNode {
 	type: "simple";
 	dataType: FormatStringAst.DataType;
 	name: string;
@@ -18,9 +18,9 @@ export interface ArraySimpleNode {
 	children: number[];
 }
 
-export type SimpleNode = NonArraySimpleNode | ArraySimpleNode;
+export type SimpleNode = SingleSimpleNode | ArraySimpleNode;
 
-export interface NonArrayStructNode {
+export interface SingleStructNode {
 	type: "struct";
 	dataType: string;
 	name: string;
@@ -36,7 +36,7 @@ export interface ArrayStructNode {
 	children: PlaceholderNode[];
 }
 
-export type StructNode = NonArrayStructNode | ArrayStructNode;
+export type StructNode = SingleStructNode | ArrayStructNode;
 
 export type NonPlaceholderNode = SimpleNode | StructNode;
 

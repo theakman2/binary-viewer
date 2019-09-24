@@ -81,8 +81,8 @@ export class BinaryContentFormatter {
 		throw new Error(`Unknown field kind: ${field.kind}`);
 	}
 
-	private _readNonArraySimpleField(struct: FormatStringAst.Struct, field: FormatStringAst.SimpleVarStatement) : BinaryContentAst.NonArraySimpleNode {
-		const ret: BinaryContentAst.NonArraySimpleNode = {
+	private _readSingleSimpleField(struct: FormatStringAst.Struct, field: FormatStringAst.SingleSimpleVarStatement) : BinaryContentAst.SingleSimpleNode {
+		const ret: BinaryContentAst.SingleSimpleNode = {
 			type: "simple",
 			array: false,
 			dataType: field.kind,
@@ -116,7 +116,7 @@ export class BinaryContentFormatter {
 		};
 	}
 
-	private _readNonArrayStructField(struct: FormatStringAst.Struct, field: FormatStringAst.StructVarStatement) : BinaryContentAst.NonArrayStructNode {
+	private _readSingleStructField(struct: FormatStringAst.Struct, field: FormatStringAst.SingleStructVarStatement) : BinaryContentAst.SingleStructNode {
 		return {
 			type: "struct",
 			array: false,
@@ -152,10 +152,10 @@ export class BinaryContentFormatter {
 				return this._readArraySimpleField(struct, field);
 			case 'ArrayStructVarStatement':
 				return this._readArrayStructField(struct, field);
-			case 'SimpleVarStatement':
-				return this._readNonArraySimpleField(struct, field);
-			case 'StructVarStatement':
-				return this._readNonArrayStructField(struct, field);
+			case 'SingleSimpleVarStatement':
+				return this._readSingleSimpleField(struct, field);
+			case 'SingleStructVarStatement':
+				return this._readSingleStructField(struct, field);
 		}
 	}
 

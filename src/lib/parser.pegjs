@@ -19,17 +19,17 @@ StructIdentifier = ident:([A-Z][a-zA-Z0-9_]*) { return ident[0] + ident[1].join(
 
 Identifier = ident:([a-zA-Z][a-zA-Z0-9_]*) { return ident[0] + ident[1].join(''); }
 
-SimpleVarStatement = ti:DataType ws i:Identifier ws ";" ws {
+SingleSimpleVarStatement = ti:DataType ws i:Identifier ws ";" ws {
 	return {
-		type: 'SimpleVarStatement',
+		type: 'SingleSimpleVarStatement',
 		kind: ti,
 		identifier: i,
 	};
 }
 
-StructVarStatement = ti:StructIdentifier ws i:Identifier ws ";" ws {
+SingleStructVarStatement = ti:StructIdentifier ws i:Identifier ws ";" ws {
 	return {
-		type: 'StructVarStatement',
+		type: 'SingleStructVarStatement',
 		kind: ti,
 		identifier: i,
 	};
@@ -65,7 +65,7 @@ Integer = v:[0-9]+ {
 	return parseInt(v, 10);
 }
 
-FieldStatement = SimpleVarStatement / StructVarStatement / ArraySimpleVarStatement / ArrayStructVarStatement
+FieldStatement = SingleSimpleVarStatement / SingleStructVarStatement / ArraySimpleVarStatement / ArrayStructVarStatement
 
 Statement = FieldStatement / StructStatement / DataStatement
 

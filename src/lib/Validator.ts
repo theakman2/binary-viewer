@@ -42,7 +42,7 @@ export class Validator {
 						if (!t.identifiers[field.count]) {
 							throw new Error(`Field identifier '${field.count}' not found in struct '${struct.identifier}'.`);
 						}
-						if (t.identifiers[field.count].type !== "SimpleVarStatement") {
+						if (t.identifiers[field.count].type !== "SingleSimpleVarStatement") {
 							throw new Error(`Field identifier '${field.count}' must be a non-array field in struct '${struct.identifier}'.`);
 						}
 					}
