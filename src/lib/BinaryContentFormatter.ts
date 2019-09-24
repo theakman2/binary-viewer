@@ -1,5 +1,5 @@
-import * as Rules from './Rules';
-import * as Ast from './Ast';
+import * as FormatStringAst from './FormatStringAst';
+import * as BinaryContentAst from './BinaryContentAst';
 
 interface ValuesByIdentifier {
 	[s: string]: number;
@@ -10,18 +10,18 @@ interface ValuesByStructIdentifier {
 }
 
 interface StructsByName {
-	[s: string]: Rules.Struct;
+	[s: string]: FormatStringAst.Struct;
 }
 
-export class Reader {
-	private _rules: Rules.Rules;
+export class BinaryContentFormatter {
+	private _rules: FormatStringAst.Root;
 	private _dataView: DataView;
 	private _structsByName: StructsByName;
 	private _simpleValuesByStructIdentifier: ValuesByStructIdentifier;
-	private _nodeStack: Ast.Node[];
+	private _nodeStack: BinaryContentAst.Node[];
 	private _offset: number;
 
-	constructor(rules: Rules.Rules, dataView: DataView) {
+	constructor(rules: FormatStringAst.Root, dataView: DataView) {
 		this._rules = rules;
 		this._dataView = dataView;
 		const structsByName = Object.create(null);
@@ -34,7 +34,7 @@ export class Reader {
 		this._offset = 0;
 	}
 
-	private _readSimpleField(field: Rules.FieldStatement) : number {
+	private _readSimpleField(field: FormatStringAst.FieldStatement) : number {
 		switch (field.kind) {
 			case 'i8': {
 				const v = this._dataView.getInt8(this._offset);
@@ -81,8 +81,8 @@ export class Reader {
 		throw new Error(`Unknown field kind: ${field.kind}`);
 	}
 
-	private _readNonArraySimpleField(struct: Rules.Struct, field: Rules.SimpleVarStatement) : Ast.NonArraySimpleNode {
-		const ret: Ast.NonArraySimpleNode = {
+	private _readNonArraySimpleField(struct: FormatStringAst.Struct, field: FormatStringAst.SimpleVarStatement) : BinaryContentAst.NonArraySimpleNode {
+		const ret: BinaryContentAst.NonArraySimpleNode = {
 			type: "simple",
 			array: false,
 			dataType: field.kind,
@@ -96,7 +96,7 @@ export class Reader {
 		return ret;
 	}
 
-	private _readArraySimpleField(struct: Rules.Struct, field: Rules.ArraySimpleVarStatement) : Ast.ArraySimpleNode {
+	private _readArraySimpleField(struct: FormatStringAst.Struct, field: FormatStringAst.ArraySimpleVarStatement) : BinaryContentAst.ArraySimpleNode {
 		const children: number[] = [];
 		let max: number;
 		if (typeof field.count === "string") {
@@ -116,7 +116,7 @@ export class Reader {
 		};
 	}
 
-	private _readNonArrayStructField(struct: Rules.Struct, field: Rules.StructVarStatement) : Ast.NonArrayStructNode {
+	private _readNonArrayStructField(struct: FormatStringAst.Struct, field: FormatStringAst.StructVarStatement) : BinaryContentAst.NonArrayStructNode {
 		return {
 			type: "struct",
 			array: false,
@@ -126,8 +126,8 @@ export class Reader {
 		};
 	}
 
-	private _readArrayStructField(struct: Rules.Struct, field: Rules.ArrayStructVarStatement) : Ast.ArrayStructNode {
-		const children: Ast.PlaceholderNode[] = [];
+	private _readArrayStructField(struct: FormatStringAst.Struct, field: FormatStringAst.ArrayStructVarStatement) : BinaryContentAst.ArrayStructNode {
+		const children: BinaryContentAst.PlaceholderNode[] = [];
 		let max: number;
 		if (typeof field.count === "string") {
 			max = Math.floor(this._simpleValuesByStructIdentifier[struct.identifier][field.count]);
@@ -146,7 +146,7 @@ export class Reader {
 		};
 	}
 
-	private _readField(struct: Rules.Struct, field: Rules.FieldStatement) : Ast.NonPlaceholderNode {
+	private _readField(struct: FormatStringAst.Struct, field: FormatStringAst.FieldStatement) : BinaryContentAst.NonPlaceholderNode {
 		switch (field.type) {
 			case 'ArraySimpleVarStatement':
 				return this._readArraySimpleField(struct, field);
@@ -159,8 +159,8 @@ export class Reader {
 		}
 	}
 
-	private _readStruct(struct: Rules.Struct) : Ast.PlaceholderNode {
-		const node: Ast.PlaceholderNode = {
+	private _readStruct(struct: FormatStringAst.Struct) : BinaryContentAst.PlaceholderNode {
+		const node: BinaryContentAst.PlaceholderNode = {
 			type: "placeholder",
 			name: struct.identifier,
 			children: [],
@@ -173,7 +173,7 @@ export class Reader {
 		return node;
 	}
 
-	public read() : Ast.Ast {
+	public read() : BinaryContentAst.Root {
 		this._offset = 0;
 		this._nodeStack = [];
 		this._simpleValuesByStructIdentifier = Object.create(null);

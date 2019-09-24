@@ -1,9 +1,9 @@
 const merge = require('deepmerge');
 
-import * as Rules from '../Rules';
-import * as Ast from '../Ast';
+import * as FormatStringAst from '../FormatStringAst';
+import * as BinaryContentAst from '../BinaryContentAst';
 
-function printSimpleValue(type: Rules.DataType, value: number) : string {
+function printSimpleValue(type: FormatStringAst.DataType, value: number) : string {
 	if (type === 'norm') {
 		const v = value;
 		const a = (v >> 30) / 3.0;
@@ -68,10 +68,10 @@ function toStyleString(obj: Styles): string {
 }
 
 export class HtmlPrinter {
-	private _parsed: Ast.Ast;
+	private _parsed: BinaryContentAst.Root;
 	private _settings: Settings;
 
-	constructor(parsed: Ast.Ast, opts: Partial<Settings>) {
+	constructor(parsed: BinaryContentAst.Root, opts: Partial<Settings>) {
 		this._parsed = parsed;
 		this._settings = merge(defaultSettings, opts || {});
 	}
@@ -87,7 +87,7 @@ export class HtmlPrinter {
 		return `<span style="${styles}">${ident}</span>`;
 	}
 
-	private _printNode(node: Ast.Node, indent: number): string {
+	private _printNode(node: BinaryContentAst.Node, indent: number): string {
 		let ret: string = '';
 		const assign = this._settings.assignment;
 		const s = this._settings.spacer;

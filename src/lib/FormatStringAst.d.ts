@@ -34,7 +34,7 @@ export interface Struct {
 	stmts: FieldStatement[];
 }
 
-export interface Rules {
+export interface Root {
 	structs: Struct[];
 	data: string;
 }

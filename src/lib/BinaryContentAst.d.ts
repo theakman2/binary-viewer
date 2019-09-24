@@ -1,10 +1,10 @@
-import * as Rules from "./Rules";
+import * as FormatStringAst from "./FormatStringAst";
 
 export type Type = "simple" | "struct";
 
 export interface NonArraySimpleNode {
 	type: "simple";
-	dataType: Rules.DataType;
+	dataType: FormatStringAst.DataType;
 	name: string;
 	array: false;
 	value: number;
@@ -12,7 +12,7 @@ export interface NonArraySimpleNode {
 
 export interface ArraySimpleNode {
 	type: "simple";
-	dataType: Rules.DataType;
+	dataType: FormatStringAst.DataType;
 	name: string;
 	array: true;
 	children: number[];
@@ -48,4 +48,4 @@ export interface PlaceholderNode {
 
 export type Node = PlaceholderNode | NonPlaceholderNode;
 
-export type Ast = PlaceholderNode;
+export type Root = PlaceholderNode;

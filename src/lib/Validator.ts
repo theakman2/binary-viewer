@@ -1,12 +1,12 @@
-import * as Rules from "./Rules";
+import * as FormatStringAst from "./FormatStringAst";
 
 interface StructByName {
-	orig: Rules.Struct;
+	orig: FormatStringAst.Struct;
 	identifiers: {
-		[s: string]: Rules.FieldStatement;
+		[s: string]: FormatStringAst.FieldStatement;
 	};
 	types: {
-		[s: string]: Rules.FieldStatement;
+		[s: string]: FormatStringAst.FieldStatement;
 	};
 }
 
@@ -15,9 +15,9 @@ interface StructsByName {
 }
 
 export class Validator {
-	private _input: Rules.Rules;
+	private _input: FormatStringAst.Root;
 	
-	constructor(input: Rules.Rules) {
+	constructor(input: FormatStringAst.Root) {
 		this._input = input;
 	}
 

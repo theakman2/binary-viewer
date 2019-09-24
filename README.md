@@ -7,7 +7,7 @@ Requires NodeJS 10.3+.
 Example usage:
 
 ```js
-const {Parser, Validator, Reader, TextPrinter} = require('binary-viewer');
+const {FormatStringParser, Validator, BinaryContentFormatter, TextPrinter} = require('binary-viewer');
 
 // A format string describing the binary data.
 const str = `
@@ -35,7 +35,7 @@ data = Main;
 `;
 
 // Parse the format string into an AST. Syntactic validation is performed here.
-const ret = new Parser(str).parse();
+const ret = new FormatStringParser(str).parse();
 
 // Perform semantic validation (e.g. do referenced structs all exist?). Throws on error.
 new Validator(ret).validate();
@@ -64,7 +64,7 @@ dataView.setUint8(23, 36, true);
 dataView.setFloat32(24, 7294.33, true);
 
 // Interpret the binary blob using the format AST we parsed earlier.
-const v = new Reader(ret, dataView).read();
+const v = new BinaryContentFormatter(ret, dataView).read();
 
 // Return the interpreted binary blob as a nicely indented text string.
 const p = new TextPrinter(v, {spacer: '  ', assignment: ': '}).print();
