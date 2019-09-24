@@ -1,0 +1,17 @@
+{
+	"name": "binary-viewer",
+	"version": "0.0.1",
+	"main": "src/index.js",
+	"scripts": {
+		"build": "pegjs --plugin ./node_modules/ts-pegjs -o src/lib/parser.pegjs.ts src/lib/parser.pegjs"
+	},
+	"dependencies": {
+		"deepmerge": "^4.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^12.7.5",
+		"pegjs": "0.10.0",
+		"ts-pegjs": "^0.2.6",
+		"typescript": "^3.6.3"
+	}
+}
