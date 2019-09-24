@@ -68,26 +68,26 @@ function toStyleString(obj: Styles): string {
 }
 
 export class HtmlPrinter {
-	_parsed: Ast.Ast;
-	_settings: Settings;
+	private _parsed: Ast.Ast;
+	private _settings: Settings;
 
 	constructor(parsed: Ast.Ast, opts: Partial<Settings>) {
 		this._parsed = parsed;
 		this._settings = merge(defaultSettings, opts || {});
 	}
 
-	_printDataType(type: string): string {
+	private _printDataType(type: string): string {
 		const isUserType = !!type.match(/^[A-Z]/);
 		const styleString = toStyleString(isUserType ? this._settings.styles.userDataType : this._settings.styles.builtinDataType);
 		return `<span style="${styleString}">${type}</span>`;
 	}
 
-	_printIdentifier(ident: string): string {
+	private _printIdentifier(ident: string): string {
 		const styles = toStyleString(this._settings.styles.identifier);
 		return `<span style="${styles}">${ident}</span>`;
 	}
 
-	_printNode(node: Ast.Node, indent: number): string {
+	private _printNode(node: Ast.Node, indent: number): string {
 		let ret: string = '';
 		const assign = this._settings.assignment;
 		const s = this._settings.spacer;
@@ -127,7 +127,7 @@ export class HtmlPrinter {
 		return ret;
 	}
 
-	print(): string {
+	public print(): string {
 		return `<pre>${this._printNode(this._parsed, 0)}</pre>`;
 	}
 };

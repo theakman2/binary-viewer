@@ -1,13 +1,13 @@
 import { Rules } from "./Rules";
 
 export class Validator {
-	_input: Rules;
+	private _input: Rules;
 	
 	constructor(input: Rules) {
 		this._input = input;
 	}
 
-	validate() {
+	public validate() {
 		const structsByName = Object.create(null);
 		for (const struct of this._input.structs) {
 			if (structsByName[struct.identifier]) {

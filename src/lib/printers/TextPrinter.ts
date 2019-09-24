@@ -26,15 +26,15 @@ const defaultSettings: Settings = {
 };
 
 export class TextPrinter {
-	_parsed: Ast.Ast;
-	_settings: Settings;
+	private _parsed: Ast.Ast;
+	private _settings: Settings;
 
 	constructor(parsed: Ast.Ast, opts: Partial<Settings>) {
 		this._parsed = parsed;
 		this._settings = merge(defaultSettings, opts || {});
 	}
 
-	_printNode(node: Ast.Node, indent: number): string {
+	private _printNode(node: Ast.Node, indent: number): string {
 		let ret: string = '';
 		const assign = this._settings.assignment;
 		const s = this._settings.spacer;
@@ -69,7 +69,7 @@ export class TextPrinter {
 		return ret;
 	}
 
-	print(): string {
+	public print(): string {
 		return this._printNode(this._parsed, 0);
 	}
 };

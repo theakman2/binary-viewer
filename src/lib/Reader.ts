@@ -14,12 +14,12 @@ interface StructsByName {
 }
 
 export class Reader {
-	_rules: Rules.Rules;
-	_dataView: DataView;
-	_structsByName: StructsByName;
-	_simpleValuesByStructIdentifier: ValuesByStructIdentifier;
-	_nodeStack: Ast.Node[];
-	_offset: number;
+	private _rules: Rules.Rules;
+	private _dataView: DataView;
+	private _structsByName: StructsByName;
+	private _simpleValuesByStructIdentifier: ValuesByStructIdentifier;
+	private _nodeStack: Ast.Node[];
+	private _offset: number;
 
 	constructor(rules: Rules.Rules, dataView: DataView) {
 		this._rules = rules;
@@ -34,7 +34,7 @@ export class Reader {
 		this._offset = 0;
 	}
 
-	_readSimpleField(field: Rules.FieldStatement) : number {
+	private _readSimpleField(field: Rules.FieldStatement) : number {
 		switch (field.kind) {
 			case 'i8': {
 				const v = this._dataView.getInt8(this._offset);
@@ -81,7 +81,7 @@ export class Reader {
 		throw new Error(`Unknown field kind: ${field.kind}`);
 	}
 
-	_readNonArraySimpleField(struct: Rules.Struct, field: Rules.SimpleVarStatement) : Ast.NonArraySimpleNode {
+	private _readNonArraySimpleField(struct: Rules.Struct, field: Rules.SimpleVarStatement) : Ast.NonArraySimpleNode {
 		const ret: Ast.NonArraySimpleNode = {
 			type: "simple",
 			array: false,
@@ -96,7 +96,7 @@ export class Reader {
 		return ret;
 	}
 
-	_readArraySimpleField(struct: Rules.Struct, field: Rules.ArraySimpleVarStatement) : Ast.ArraySimpleNode {
+	private _readArraySimpleField(struct: Rules.Struct, field: Rules.ArraySimpleVarStatement) : Ast.ArraySimpleNode {
 		const children: number[] = [];
 		let max: number;
 		if (typeof field.count === "string") {
@@ -116,7 +116,7 @@ export class Reader {
 		};
 	}
 
-	_readNonArrayStructField(struct: Rules.Struct, field: Rules.StructVarStatement) : Ast.NonArrayStructNode {
+	private _readNonArrayStructField(struct: Rules.Struct, field: Rules.StructVarStatement) : Ast.NonArrayStructNode {
 		return {
 			type: "struct",
 			array: false,
@@ -126,7 +126,7 @@ export class Reader {
 		};
 	}
 
-	_readArrayStructField(struct: Rules.Struct, field: Rules.ArrayStructVarStatement) : Ast.ArrayStructNode {
+	private _readArrayStructField(struct: Rules.Struct, field: Rules.ArrayStructVarStatement) : Ast.ArrayStructNode {
 		const children: Ast.PlaceholderNode[] = [];
 		let max: number;
 		if (typeof field.count === "string") {
@@ -146,7 +146,7 @@ export class Reader {
 		};
 	}
 
-	_readField(struct: Rules.Struct, field: Rules.FieldStatement) : Ast.NonPlaceholderNode {
+	private _readField(struct: Rules.Struct, field: Rules.FieldStatement) : Ast.NonPlaceholderNode {
 		switch (field.type) {
 			case 'ArraySimpleVarStatement':
 				return this._readArraySimpleField(struct, field);
@@ -159,7 +159,7 @@ export class Reader {
 		}
 	}
 
-	_readStruct(struct: Rules.Struct) : Ast.PlaceholderNode {
+	private _readStruct(struct: Rules.Struct) : Ast.PlaceholderNode {
 		const node: Ast.PlaceholderNode = {
 			type: "placeholder",
 			name: struct.identifier,
@@ -173,7 +173,7 @@ export class Reader {
 		return node;
 	}
 
-	read() : Ast.Ast {
+	public read() : Ast.Ast {
 		this._offset = 0;
 		this._nodeStack = [];
 		this._simpleValuesByStructIdentifier = Object.create(null);
