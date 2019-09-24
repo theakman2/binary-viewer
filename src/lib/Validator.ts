@@ -1,19 +1,33 @@
-import { Rules } from "./Rules";
+import * as Rules from "./Rules";
+
+interface StructByName {
+	orig: Rules.Struct;
+	identifiers: {
+		[s: string]: Rules.FieldStatement;
+	};
+	types: {
+		[s: string]: Rules.FieldStatement;
+	};
+}
+
+interface StructsByName {
+	[s: string]: StructByName;
+}
 
 export class Validator {
-	private _input: Rules;
+	private _input: Rules.Rules;
 	
-	constructor(input: Rules) {
+	constructor(input: Rules.Rules) {
 		this._input = input;
 	}
 
 	public validate() {
-		const structsByName = Object.create(null);
+		const structsByName: StructsByName = Object.create(null);
 		for (const struct of this._input.structs) {
 			if (structsByName[struct.identifier]) {
 				throw new Error(`Struct '${struct.identifier}' already defined.`);
 			}
-			const t = {
+			const t: StructByName = {
 				orig: struct,
 				identifiers: Object.create(null),
 				types: Object.create(null),
