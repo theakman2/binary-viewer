@@ -1,4 +1,4 @@
-const merge = require('deepmerge');
+import * as merge from 'deepmerge';
 
 import * as FormatStringAst from '../FormatStringAst';
 import * as BinaryContentAst from '../BinaryContentAst';
@@ -26,47 +26,69 @@ const defaultSettings: Settings = {
 };
 
 export class TextPrinter {
-	private _parsed: BinaryContentAst.Root;
+	private _parsed: BinaryContentAst.StructNode;
 	private _settings: Settings;
 
-	constructor(parsed: BinaryContentAst.Root, opts: Partial<Settings>) {
+	constructor(parsed: BinaryContentAst.StructNode, opts: Partial<Settings>) {
 		this._parsed = parsed;
 		this._settings = merge(defaultSettings, opts || {});
 	}
 
-	private _printNode(node: BinaryContentAst.Node, indent: number): string {
-		let ret: string = '';
+	private _printSingleSimpleFieldNode(node: BinaryContentAst.SingleSimpleFieldNode, indent: number): string {
 		const assign = this._settings.assignment;
 		const s = this._settings.spacer;
 		const t = s.repeat(indent);
-		if (node.type == 'simple') {
-			if (node.array === false) {
-				ret = `${t}${node.dataType} ${node.name}${assign}${printSimpleValue(node.dataType, node.value)};\n`;
-			} else {
-				ret = `${t}${node.dataType} ${node.name}[${node.children.length}]${assign}[\n${t}${s}${node.children.map(v => printSimpleValue(node.dataType, v)).join(`,\n${t}${s}`)}\n${t}];\n`;
-			}
-		} else if (node.type == 'struct') {
-			if (node.array === false) {
-				let bits = ``
-				for (const gc of node.value.children) {
-					bits += this._printNode(gc, indent + 1);
-				}
-				ret = `${t}${node.dataType} ${node.name}${assign}{\n${bits}${t}};\n`;
-			} else {
-				let bits = '';
-				for (const c of node.children) {
-					bits += `${t}${s}${c.name}${assign}{\n`
-					for (const gc of c.children) {
-						bits += this._printNode(gc, indent + 2);
-					}
-					bits += `${t}${s}};\n`;
-				}
-				ret = `${t}${node.dataType} ${node.name}[${node.children.length}]${assign}[\n${bits}${t}];\n`;
-			}
-		} else if (node.type == "placeholder") {
-			ret = `${t}${node.name}${assign}{\n${node.children.map(v => this._printNode(v, indent + 1)).join('')}${t}};\n`;
+		return `${t}${node.dataType} ${node.name}${assign}${printSimpleValue(node.dataType, node.value)};\n`;
+	}
+
+	private _printArraySimpleFieldNode(node: BinaryContentAst.ArraySimpleFieldNode, indent: number): string {
+		const assign = this._settings.assignment;
+		const s = this._settings.spacer;
+		const t = s.repeat(indent);
+		return `${t}${node.dataType} ${node.name}[${node.children.length}]${assign}[\n${t}${s}${node.children.map(v => printSimpleValue(node.dataType, v)).join(`,\n${t}${s}`)}\n${t}];\n`;
+	}
+
+	private _printSingleStructFieldNode(node: BinaryContentAst.SingleStructFieldNode, indent: number): string {
+		const assign = this._settings.assignment;
+		const s = this._settings.spacer;
+		const t = s.repeat(indent);
+		let bits = ``
+		for (const gc of node.value.children) {
+			bits += this._printNode(gc, indent + 1);
 		}
-		return ret;
+		return `${t}${node.dataType} ${node.name}${assign}{\n${bits}${t}};\n`;
+	}
+
+	private _printArrayStructFieldNode(node: BinaryContentAst.ArrayStructFieldNode, indent: number): string {
+		const assign = this._settings.assignment;
+		const s = this._settings.spacer;
+		const t = s.repeat(indent);
+		let bits = '';
+		for (const c of node.children) {
+			bits += this._printNode(c, indent + 1);
+		}
+		return `${t}${node.dataType} ${node.name}[${node.children.length}]${assign}[\n${bits}${t}];\n`;
+	}
+
+	private _printStructNode(node: BinaryContentAst.StructNode, indent: number): string {
+		const s = this._settings.spacer;
+		const t = s.repeat(indent);
+		return `${t}${node.name} {\n${node.children.map(v => this._printNode(v, indent + 1)).join('')}${t}};\n`;
+	}
+
+	private _printNode(node: BinaryContentAst.Node, indent: number): string {
+		switch (node.type) {
+			case "SingleSimpleFieldNode":
+				return this._printSingleSimpleFieldNode(node, indent);
+			case "ArraySimpleFieldNode":
+				return this._printArraySimpleFieldNode(node, indent);
+			case "SingleStructFieldNode":
+				return this._printSingleStructFieldNode(node, indent);
+			case "ArrayStructFieldNode":
+				return this._printArrayStructFieldNode(node, indent);
+			case "StructNode":
+				return this._printStructNode(node, indent);
+		}
 	}
 
 	public print(): string {

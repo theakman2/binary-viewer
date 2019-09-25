@@ -81,10 +81,9 @@ export class BinaryContentFormatter {
 		throw new Error(`Unknown field kind: ${field.kind}`);
 	}
 
-	private _readSingleSimpleField(struct: FormatStringAst.Struct, field: FormatStringAst.SingleSimpleVarStatement) : BinaryContentAst.SingleSimpleNode {
-		const ret: BinaryContentAst.SingleSimpleNode = {
-			type: "simple",
-			array: false,
+	private _readSingleSimpleField(struct: FormatStringAst.Struct, field: FormatStringAst.SingleSimpleVarStatement) : BinaryContentAst.SingleSimpleFieldNode {
+		const ret: BinaryContentAst.SingleSimpleFieldNode = {
+			type: "SingleSimpleFieldNode",
 			dataType: field.kind,
 			name: field.identifier,
 			value: this._readSimpleField(field),
@@ -96,7 +95,7 @@ export class BinaryContentFormatter {
 		return ret;
 	}
 
-	private _readArraySimpleField(struct: FormatStringAst.Struct, field: FormatStringAst.ArraySimpleVarStatement) : BinaryContentAst.ArraySimpleNode {
+	private _readArraySimpleField(struct: FormatStringAst.Struct, field: FormatStringAst.ArraySimpleVarStatement) : BinaryContentAst.ArraySimpleFieldNode {
 		const children: number[] = [];
 		let max: number;
 		if (typeof field.count === "string") {
@@ -108,26 +107,24 @@ export class BinaryContentFormatter {
 			children.push(this._readSimpleField(field));
 		}
 		return {
-			type: "simple",
+			type: "ArraySimpleFieldNode",
 			dataType: field.kind,
 			name: field.identifier,
-			array: true,
 			children: children,
 		};
 	}
 
-	private _readSingleStructField(struct: FormatStringAst.Struct, field: FormatStringAst.SingleStructVarStatement) : BinaryContentAst.SingleStructNode {
+	private _readSingleStructField(struct: FormatStringAst.Struct, field: FormatStringAst.SingleStructVarStatement) : BinaryContentAst.SingleStructFieldNode {
 		return {
-			type: "struct",
-			array: false,
+			type: "SingleStructFieldNode",
 			dataType: field.kind,
 			name: field.identifier,
 			value: this._readStruct(this._structsByName[field.kind]),
 		};
 	}
 
-	private _readArrayStructField(struct: FormatStringAst.Struct, field: FormatStringAst.ArrayStructVarStatement) : BinaryContentAst.ArrayStructNode {
-		const children: BinaryContentAst.PlaceholderNode[] = [];
+	private _readArrayStructField(struct: FormatStringAst.Struct, field: FormatStringAst.ArrayStructVarStatement) : BinaryContentAst.ArrayStructFieldNode {
+		const children: BinaryContentAst.StructNode[] = [];
 		let max: number;
 		if (typeof field.count === "string") {
 			max = Math.floor(this._simpleValuesByStructIdentifier[struct.identifier][field.count]);
@@ -138,15 +135,14 @@ export class BinaryContentFormatter {
 			children.push(this._readStruct(this._structsByName[field.kind]));
 		}
 		return {
-			type: "struct",
+			type: "ArrayStructFieldNode",
 			dataType: field.kind,
 			name: field.identifier,
-			array: true,
 			children: children,
 		};
 	}
 
-	private _readField(struct: FormatStringAst.Struct, field: FormatStringAst.FieldStatement) : BinaryContentAst.NonPlaceholderNode {
+	private _readField(struct: FormatStringAst.Struct, field: FormatStringAst.FieldStatement) : BinaryContentAst.FieldNode {
 		switch (field.type) {
 			case 'ArraySimpleVarStatement':
 				return this._readArraySimpleField(struct, field);
@@ -159,9 +155,9 @@ export class BinaryContentFormatter {
 		}
 	}
 
-	private _readStruct(struct: FormatStringAst.Struct) : BinaryContentAst.PlaceholderNode {
-		const node: BinaryContentAst.PlaceholderNode = {
-			type: "placeholder",
+	private _readStruct(struct: FormatStringAst.Struct) : BinaryContentAst.StructNode {
+		const node: BinaryContentAst.StructNode = {
+			type: "StructNode",
 			name: struct.identifier,
 			children: [],
 		};
@@ -173,7 +169,7 @@ export class BinaryContentFormatter {
 		return node;
 	}
 
-	public read() : BinaryContentAst.Root {
+	public read() : BinaryContentAst.StructNode {
 		this._offset = 0;
 		this._nodeStack = [];
 		this._simpleValuesByStructIdentifier = Object.create(null);

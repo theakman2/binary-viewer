@@ -2,50 +2,44 @@ import * as FormatStringAst from "./FormatStringAst";
 
 export type Type = "simple" | "struct";
 
-export interface SingleSimpleNode {
-	type: "simple";
+export interface SingleSimpleFieldNode {
+	type: "SingleSimpleFieldNode";
 	dataType: FormatStringAst.DataType;
 	name: string;
-	array: false;
 	value: number;
 }
 
-export interface ArraySimpleNode {
-	type: "simple";
+export interface ArraySimpleFieldNode {
+	type: "ArraySimpleFieldNode";
 	dataType: FormatStringAst.DataType;
 	name: string;
-	array: true;
 	children: number[];
 }
 
-export type SimpleNode = SingleSimpleNode | ArraySimpleNode;
+export type SimpleFieldNode = SingleSimpleFieldNode | ArraySimpleFieldNode;
 
-export interface SingleStructNode {
-	type: "struct";
+export interface SingleStructFieldNode {
+	type: "SingleStructFieldNode";
 	dataType: string;
 	name: string;
-	array: false;
-	value: PlaceholderNode;
+	value: StructNode;
 }
 
-export interface ArrayStructNode {
-	type: "struct";
+export interface ArrayStructFieldNode {
+	type: "ArrayStructFieldNode";
 	dataType: string;
 	name: string;
-	array: true;
-	children: PlaceholderNode[];
+	children: StructNode[];
 }
 
-export type StructNode = SingleStructNode | ArrayStructNode;
+export type StructFieldNode = SingleStructFieldNode | ArrayStructFieldNode;
 
-export type NonPlaceholderNode = SimpleNode | StructNode;
+export type FieldNode = SimpleFieldNode | StructFieldNode;
 
-export interface PlaceholderNode {
-	type: "placeholder";
+export interface StructNode {
+	type: "StructNode";
 	name: string;
-	children: NonPlaceholderNode[];
+	children: FieldNode[];
 }
 
-export type Node = PlaceholderNode | NonPlaceholderNode;
-
-export type Root = PlaceholderNode;
+export type Node = StructNode | FieldNode;
