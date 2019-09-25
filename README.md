@@ -1,6 +1,6 @@
 # Binary Viewer
 
-A NodeJS module to view binary files. Still a work in progress!
+A NodeJS module to view binary content.
 
 Requires NodeJS 10.3+.
 
@@ -67,47 +67,48 @@ dataView.setFloat32(24, 7294.33, true);
 const binaryContentAst = new BinaryContentFormatter(formatStringAst, dataView).read();
 
 // Return the interpreted binary blob as a nicely indented text string.
-const textContent = new TextPrinter(binaryContentAst, {spacer: '  ', assignment: ': '}).print();
+const textContent = new TextPrinter(binaryContentAst, {spacer: '    ', assignment: ': '}).print();
 
 /*
 `textContent` is a string with the following content:
 
-Main = {
-        u32 count = 8;
-        u8 values[8] = [
-                10,
-                20,
-                30,
-                40,
-                50,
-                60,
-                70,
-                80
-        ];
-        i32 foo = 2;
-        Vertex data[2] = [
-                Vertex = {
-                        Hello a = {
-                                u8 x = 5;
-                                u8 y = 15;
-                        };
-                        Hello b = {
-                                u8 x = 25;
-                                u8 y = 35;
-                        };
-                };
-                Vertex = {
-                        Hello a = {
-                                u8 x = 6;
-                                u8 y = 16;
-                        };
-                        Hello b = {
-                                u8 x = 26;
-                                u8 y = 36;
-                        };
-                };
-        ];
-        f32 myfloat = 7294.330078125;
+Main {
+    u32 count: 8;
+    u8 values[8]: [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80
+    ];
+    i32 foo: 2;
+    Vertex data[2]: [
+        Vertex {
+            Hello a: {
+                u8 x: 5;
+                u8 y: 15;
+            };
+            Hello b: {
+                u8 x: 25;
+                u8 y: 35;
+            };
+        };
+        Vertex {
+            Hello a: {
+                u8 x: 6;
+                u8 y: 16;
+            };
+            Hello b: {
+                u8 x: 26;
+                u8 y: 36;
+            };
+        };
+    ];
+    f32 myfloat: 7294.330078125;
 };
+
 */
 ```
