@@ -112,3 +112,20 @@ Main {
 
 */
 ```
+
+## Building
+
+If the pegjs grammar file (`src/main/parser.pegjs`) hasn't been changed, run the following:
+
+	$ npm run build
+
+If the pegjs grammar file has been changed, run the following:
+
+	$ npm run pegjs
+	$ npm run build
+
+## Tests
+
+Run the unit tests as follows:
+
+	$ npm run test

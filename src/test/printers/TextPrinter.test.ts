@@ -1,6 +1,6 @@
-import * as BinaryContentAst from '../../lib/BinaryContentAst';
+import * as BinaryContentAst from '../../main/BinaryContentAst';
 
-import {TextPrinter} from '../../lib/printers/TextPrinter';
+import {TextPrinter} from '../../main/printers/TextPrinter';
 
 function nice(str: string): string {
 	const parts = str.split(`\n`);

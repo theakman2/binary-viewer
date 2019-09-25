@@ -3,7 +3,8 @@
 	"version": "0.9.0",
 	"main": "dist/index.js",
 	"scripts": {
-		"build": "pegjs --plugin ./node_modules/ts-pegjs -o src/lib/parser.pegjs.ts src/lib/parser.pegjs",
+		"pegjs": "pegjs --plugin ./node_modules/ts-pegjs -o src/main/parser.pegjs.ts src/main/parser.pegjs",
+		"build": "tsc",
 		"test": "jest"
 	},
 	"engines": {

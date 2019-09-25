@@ -1,5 +1,4 @@
-dist
 node_modules
-playground
-**/*.pegjs.ts
-coverage
+/playground
+/src/**/*.pegjs.ts
+/coverage
