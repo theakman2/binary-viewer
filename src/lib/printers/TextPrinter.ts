@@ -29,7 +29,7 @@ export class TextPrinter {
 	private _parsed: BinaryContentAst.StructNode;
 	private _settings: Settings;
 
-	constructor(parsed: BinaryContentAst.StructNode, opts: Partial<Settings>) {
+	constructor(parsed: BinaryContentAst.StructNode, opts?: Partial<Settings>) {
 		this._parsed = parsed;
 		this._settings = merge(defaultSettings, opts || {});
 	}
@@ -73,7 +73,7 @@ export class TextPrinter {
 	private _printStructNode(node: BinaryContentAst.StructNode, indent: number): string {
 		const s = this._settings.spacer;
 		const t = s.repeat(indent);
-		return `${t}${node.name} {\n${node.children.map(v => this._printNode(v, indent + 1)).join('')}${t}};\n`;
+		return `${t}${node.dataType} {\n${node.children.map(v => this._printNode(v, indent + 1)).join('')}${t}};\n`;
 	}
 
 	private _printNode(node: BinaryContentAst.Node, indent: number): string {

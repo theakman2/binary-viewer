@@ -3,14 +3,18 @@
 	"version": "0.0.1",
 	"main": "src/index.js",
 	"scripts": {
-		"build": "pegjs --plugin ./node_modules/ts-pegjs -o src/lib/parser.pegjs.ts src/lib/parser.pegjs"
+		"build": "pegjs --plugin ./node_modules/ts-pegjs -o src/lib/parser.pegjs.ts src/lib/parser.pegjs",
+		"test": "jest"
 	},
 	"dependencies": {
 		"deepmerge": "^4.0.0"
 	},
 	"devDependencies": {
+		"@types/jest": "^24.0.18",
 		"@types/node": "^12.7.5",
+		"jest": "^24.9.0",
 		"pegjs": "0.10.0",
+		"ts-jest": "^24.1.0",
 		"ts-pegjs": "^0.2.6",
 		"typescript": "^3.6.3"
 	}

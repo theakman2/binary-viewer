@@ -38,7 +38,7 @@ export type FieldNode = SimpleFieldNode | StructFieldNode;
 
 export interface StructNode {
 	type: "StructNode";
-	name: string;
+	dataType: string;
 	children: FieldNode[];
 }
 

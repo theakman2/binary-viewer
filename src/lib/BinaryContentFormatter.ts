@@ -158,7 +158,7 @@ export class BinaryContentFormatter {
 	private _readStruct(struct: FormatStringAst.Struct) : BinaryContentAst.StructNode {
 		const node: BinaryContentAst.StructNode = {
 			type: "StructNode",
-			name: struct.identifier,
+			dataType: struct.identifier,
 			children: [],
 		};
 		this._nodeStack.push(node);
