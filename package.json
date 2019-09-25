@@ -1,12 +1,35 @@
 {
 	"name": "binary-viewer",
+	"description": "Pretty view binary content",
 	"version": "0.9.0",
 	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"author": {
+		"email": "theakman2@hotmail.com",
+		"name": "A Kazim"
+	},
+	"keywords": [
+		"binary",
+		"viewer",
+		"binary-viewer"
+	],
 	"scripts": {
 		"pegjs": "pegjs --plugin ./node_modules/ts-pegjs -o src/main/parser.pegjs.ts src/main/parser.pegjs",
 		"build": "tsc",
 		"test": "jest"
 	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/theakman2/binary-viewer.git"
+	},
+	"homepage": "https://github.com/theakman2/binary-viewer",
+	"bugs": {
+		"url": "https://github.com/theakman2/binary-viewer/issues"
+	},
+	"license": "MIT",
+	"files": [
+		"dist/**/*"
+	],
 	"engines": {
 		"node": ">=10.3.0"
 	},

@@ -1,6 +1,6 @@
 # Binary Viewer
 
-A NodeJS module to view binary content.
+A NodeJS module to pretty view binary content.
 
 Requires NodeJS 10.3+.
 
