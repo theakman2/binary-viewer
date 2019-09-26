@@ -1,5 +1,7 @@
 import * as FormatStringAst from './FormatStringAst';
 import * as BinaryContentAst from './BinaryContentAst';
+import { Validator } from './Validator';
+import * as intrinsics from './intrinsics';
 
 interface ValuesByIdentifier {
 	[s: string]: number;
@@ -13,28 +15,38 @@ interface StructsByName {
 	[s: string]: FormatStringAst.Struct;
 }
 
+interface IntrinsicDefinitionsByName {
+	[s: string]: intrinsics.IntrinsicDefinition;
+}
+
 export class BinaryContentFormatter {
-	private _rules: FormatStringAst.Root;
-	private _dataView: DataView;
-	private _structsByName: StructsByName;
+	private readonly _formatStringAst: Readonly<FormatStringAst.Root>;
+	private readonly _dataView: DataView;
+	private readonly _structsByName: Readonly<StructsByName>;
+	private readonly _intrinsicDefinitionsByName: Readonly<IntrinsicDefinitionsByName>;
 	private _simpleValuesByStructIdentifier: ValuesByStructIdentifier;
 	private _nodeStack: BinaryContentAst.Node[];
 	private _offset: number;
 
-	constructor(rules: FormatStringAst.Root, dataView: DataView) {
-		this._rules = rules;
+	constructor(formatStringAst: Readonly<FormatStringAst.Root>, dataView: DataView) {
+		this._formatStringAst = formatStringAst;
 		this._dataView = dataView;
 		const structsByName = Object.create(null);
-		for (const struct of rules.structs) {
+		for (const struct of formatStringAst.structs) {
 			structsByName[struct.identifier] = struct;
 		}
 		this._structsByName = structsByName;
 		this._simpleValuesByStructIdentifier = {};
 		this._nodeStack = [];
 		this._offset = 0;
+		const intrinsicDefinitionsByName: IntrinsicDefinitionsByName = Object.create(null);
+		for (const int of intrinsics.allowed) {
+			intrinsicDefinitionsByName[int.name] = int;
+		}
+		this._intrinsicDefinitionsByName = intrinsicDefinitionsByName;
 	}
 
-	private _readSimpleField(field: FormatStringAst.FieldStatement) : number {
+	private _readSimpleField(field: FormatStringAst.FieldStatement): number {
 		switch (field.kind) {
 			case 'i8': {
 				const v = this._dataView.getInt8(this._offset);
@@ -81,7 +93,21 @@ export class BinaryContentFormatter {
 		throw new Error(`Unknown field kind: ${field.kind}`);
 	}
 
-	private _readSingleSimpleField(struct: FormatStringAst.Struct, field: FormatStringAst.SingleSimpleVarStatement) : BinaryContentAst.SingleSimpleFieldNode {
+	private _getArrayCount(struct: FormatStringAst.Struct, field: FormatStringAst.ArrayVarStatement): number {
+		let max: number;
+		if (typeof field.count === "string") {
+			if (field.count[0] === "_") {
+				max = this._intrinsicDefinitionsByName[field.count].value(this._dataView, this._offset);
+			} else {
+				max = Math.floor(this._simpleValuesByStructIdentifier[struct.identifier][field.count]);
+			}
+		} else {
+			max = field.count;
+		}
+		return max;
+	}
+
+	private _readSingleSimpleField(struct: FormatStringAst.Struct, field: FormatStringAst.SingleSimpleVarStatement): BinaryContentAst.SingleSimpleFieldNode {
 		const ret: BinaryContentAst.SingleSimpleFieldNode = {
 			type: "SingleSimpleFieldNode",
 			dataType: field.kind,
@@ -95,14 +121,9 @@ export class BinaryContentFormatter {
 		return ret;
 	}
 
-	private _readArraySimpleField(struct: FormatStringAst.Struct, field: FormatStringAst.ArraySimpleVarStatement) : BinaryContentAst.ArraySimpleFieldNode {
+	private _readArraySimpleField(struct: FormatStringAst.Struct, field: FormatStringAst.ArraySimpleVarStatement): BinaryContentAst.ArraySimpleFieldNode {
 		const children: number[] = [];
-		let max: number;
-		if (typeof field.count === "string") {
-			max = Math.floor(this._simpleValuesByStructIdentifier[struct.identifier][field.count]);
-		} else {
-			max = field.count;
-		}
+		let max: number = this._getArrayCount(struct, field);
 		for (let i = 0; i < max; ++i) {
 			children.push(this._readSimpleField(field));
 		}
@@ -114,7 +135,7 @@ export class BinaryContentFormatter {
 		};
 	}
 
-	private _readSingleStructField(struct: FormatStringAst.Struct, field: FormatStringAst.SingleStructVarStatement) : BinaryContentAst.SingleStructFieldNode {
+	private _readSingleStructField(struct: FormatStringAst.Struct, field: FormatStringAst.SingleStructVarStatement): BinaryContentAst.SingleStructFieldNode {
 		return {
 			type: "SingleStructFieldNode",
 			dataType: field.kind,
@@ -123,14 +144,9 @@ export class BinaryContentFormatter {
 		};
 	}
 
-	private _readArrayStructField(struct: FormatStringAst.Struct, field: FormatStringAst.ArrayStructVarStatement) : BinaryContentAst.ArrayStructFieldNode {
+	private _readArrayStructField(struct: FormatStringAst.Struct, field: FormatStringAst.ArrayStructVarStatement): BinaryContentAst.ArrayStructFieldNode {
 		const children: BinaryContentAst.StructNode[] = [];
-		let max: number;
-		if (typeof field.count === "string") {
-			max = Math.floor(this._simpleValuesByStructIdentifier[struct.identifier][field.count]);
-		} else {
-			max = field.count;
-		}
+		let max: number = this._getArrayCount(struct, field);
 		for (let i = 0; i < max; ++i) {
 			children.push(this._readStruct(this._structsByName[field.kind]));
 		}
@@ -142,7 +158,7 @@ export class BinaryContentFormatter {
 		};
 	}
 
-	private _readField(struct: FormatStringAst.Struct, field: FormatStringAst.FieldStatement) : BinaryContentAst.FieldNode {
+	private _readField(struct: FormatStringAst.Struct, field: FormatStringAst.FieldStatement): BinaryContentAst.FieldNode {
 		switch (field.type) {
 			case 'ArraySimpleVarStatement':
 				return this._readArraySimpleField(struct, field);
@@ -155,7 +171,7 @@ export class BinaryContentFormatter {
 		}
 	}
 
-	private _readStruct(struct: FormatStringAst.Struct) : BinaryContentAst.StructNode {
+	private _readStruct(struct: FormatStringAst.Struct): BinaryContentAst.StructNode {
 		const node: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: struct.identifier,
@@ -169,10 +185,16 @@ export class BinaryContentFormatter {
 		return node;
 	}
 
-	public read() : BinaryContentAst.StructNode {
+	public read(): BinaryContentAst.StructNode {
 		this._offset = 0;
 		this._nodeStack = [];
 		this._simpleValuesByStructIdentifier = Object.create(null);
-		return this._readStruct(this._structsByName[this._rules.root]);
+		new Validator(
+			this._formatStringAst,
+			{
+				allowedIntrinsics: Object.keys(this._intrinsicDefinitionsByName),
+			}
+		).validate();
+		return this._readStruct(this._structsByName[this._formatStringAst.root]);
 	}
 };

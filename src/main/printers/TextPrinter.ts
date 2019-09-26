@@ -3,7 +3,7 @@ import * as merge from 'deepmerge';
 import * as FormatStringAst from '../FormatStringAst';
 import * as BinaryContentAst from '../BinaryContentAst';
 
-function printSimpleValue(type: FormatStringAst.DataType, value: number) : string {
+function printSimpleValue(type: FormatStringAst.DataType, value: number): string {
 	if (type === 'norm') {
 		const v = value;
 		const a = (v >> 30) / 3.0;
@@ -26,10 +26,10 @@ const defaultSettings: Settings = {
 };
 
 export class TextPrinter {
-	private _parsed: BinaryContentAst.StructNode;
-	private _settings: Settings;
+	private readonly _parsed: Readonly<BinaryContentAst.StructNode>;
+	private readonly _settings: Readonly<Settings>;
 
-	constructor(parsed: BinaryContentAst.StructNode, opts?: Partial<Settings>) {
+	constructor(parsed: Readonly<BinaryContentAst.StructNode>, opts?: Readonly<Partial<Settings>>) {
 		this._parsed = parsed;
 		this._settings = merge(defaultSettings, opts || {});
 	}

@@ -12,6 +12,8 @@ export interface SingleStructVarStatement {
 	identifier: string;
 }
 
+export type SingleVarStatement = SingleSimpleVarStatement | SingleStructVarStatement;
+
 export interface ArraySimpleVarStatement {
 	type: 'ArraySimpleVarStatement';
 	kind: DataType;
@@ -26,7 +28,9 @@ export interface ArrayStructVarStatement {
 	count: number | string;
 }
 
-export type FieldStatement = SingleSimpleVarStatement | SingleStructVarStatement | ArraySimpleVarStatement | ArrayStructVarStatement;
+export type ArrayVarStatement = ArraySimpleVarStatement | ArrayStructVarStatement;
+
+export type FieldStatement = SingleVarStatement | ArrayVarStatement;
 
 export interface Struct {
 	type: "struct";

@@ -1,9 +1,9 @@
 import * as FormatStringAst from './FormatStringAst';
-import {parse} from './parser.pegjs';
+import { parse } from './parser.pegjs';
 
 export class FormatStringParser {
-	private _str: string;
-	
+	private readonly _str: string;
+
 	constructor(str: string) {
 		this._str = str;
 	}

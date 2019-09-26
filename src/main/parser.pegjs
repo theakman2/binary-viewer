@@ -19,6 +19,8 @@ StructIdentifier = ident:([A-Z][a-zA-Z0-9_]*) { return ident[0] + ident[1].join(
 
 Identifier = ident:([a-zA-Z][a-zA-Z0-9_]*) { return ident[0] + ident[1].join(''); }
 
+Intrinsic = v:("__" [A-Z0-9]+ "__") { return v[0] + v[1].join('') + v[2]; }
+
 SingleSimpleVarStatement = ti:DataType ws i:Identifier ws ";" ws {
 	return {
 		type: 'SingleSimpleVarStatement',
@@ -35,7 +37,7 @@ SingleStructVarStatement = ti:StructIdentifier ws i:Identifier ws ";" ws {
 	};
 }
 
-ArraySimpleVarStatement = t:DataType ws i:Identifier ws "[" ws v:(Integer/Identifier) ws "]" ws ";" ws {
+ArraySimpleVarStatement = t:DataType ws i:Identifier ws "[" ws v:(Integer/Identifier/Intrinsic) ws "]" ws ";" ws {
 	return {
 		type: 'ArraySimpleVarStatement',
 		kind: t,
@@ -44,7 +46,7 @@ ArraySimpleVarStatement = t:DataType ws i:Identifier ws "[" ws v:(Integer/Identi
 	};
 }
 
-ArrayStructVarStatement = t:StructIdentifier ws i:Identifier ws "[" ws v:(Integer/Identifier) ws "]" ws ";" ws {
+ArrayStructVarStatement = t:StructIdentifier ws i:Identifier ws "[" ws v:(Integer/Identifier/Intrinsic) ws "]" ws ";" ws {
 	return {
 		type: 'ArrayStructVarStatement',
 		kind: t,
