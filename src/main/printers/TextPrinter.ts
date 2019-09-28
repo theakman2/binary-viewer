@@ -110,7 +110,7 @@ export class TextPrinter {
 	private _printStructNode(node: BinaryContentAst.StructNode, indent: number): string {
 		const s = this._settings.spacer;
 		const t = s.repeat(indent);
-		return `${t}${node.dataType} {\n${node.children.map(v => this._printNode(v, indent + 1)).join('')}${t}};\n`;
+		return `${t}${node.dataType} {\n${node.children.filter(v => !v.attributes.includes('hide')).map(v => this._printNode(v, indent + 1)).join('')}${t}};\n`;
 	}
 
 	private _printNode(node: BinaryContentAst.Node, indent: number): string {

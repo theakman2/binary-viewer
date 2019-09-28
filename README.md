@@ -7,20 +7,25 @@ Requires NodeJS 10.3+.
 Example usage:
 
 ```js
-const {FormatStringParser, BinaryContentFormatter, TextPrinter} = require('binary-viewer');
+const { FormatStringParser, BinaryContentFormatter, TextPrinter } = require('binary-viewer');
 
 // A format string describing the binary data.
 const formatString = `
 
 Hello {
 	uint8 x;
-	uint8 y;
+	uint8 y; // format strings can have comments
 };
 
 Vertex {
 	Hello a;
 	Hello b;
 };
+
+/*
+	Multline comments are supported too.
+	Yay.
+*/
 
 Main {
 	uint32 count;

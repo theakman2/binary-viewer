@@ -182,6 +182,7 @@ export class BinaryContentFormatter {
 			dataType: field.dataType,
 			name: field.identifier,
 			value: this._readPrimitiveField(field),
+			attributes: field.attributes.slice(0),
 		};
 		if (typeof ret.value === "number") {
 			if (!this._simpleValuesByStructIdentifier[struct.identifier]) {
@@ -203,6 +204,7 @@ export class BinaryContentFormatter {
 			dataType: field.dataType,
 			name: field.identifier,
 			children: children,
+			attributes: field.attributes.slice(0),
 		};
 	}
 
@@ -212,6 +214,7 @@ export class BinaryContentFormatter {
 			dataType: field.dataType,
 			name: field.identifier,
 			value: this._readStruct(this._structsByName[field.dataType]),
+			attributes: field.attributes.slice(0),
 		};
 	}
 
@@ -226,6 +229,7 @@ export class BinaryContentFormatter {
 			dataType: field.dataType,
 			name: field.identifier,
 			children: children,
+			attributes: field.attributes.slice(0),
 		};
 	}
 
@@ -247,6 +251,7 @@ export class BinaryContentFormatter {
 			type: "StructNode",
 			dataType: struct.identifier,
 			children: [],
+			attributes: struct.attributes.slice(0),
 		};
 		this._nodeStack.push(node);
 		for (const field of struct.stmts) {

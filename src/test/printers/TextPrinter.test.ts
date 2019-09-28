@@ -86,12 +86,14 @@ describe(`simple fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "SinglePrimitiveFieldNode",
 					dataType: uint32(),
 					name: "myint",
 					value: 7,
+					attributes: [],
 				},
 			],
 		};
@@ -107,6 +109,7 @@ describe(`simple fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "SinglePrimitiveFieldNode",
@@ -115,6 +118,7 @@ describe(`simple fields`, () => {
 					},
 					name: "str",
 					value: "ABC",
+					attributes: [],
 				},
 			],
 		};
@@ -130,6 +134,7 @@ describe(`simple fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "SinglePrimitiveFieldNode",
@@ -139,6 +144,7 @@ describe(`simple fields`, () => {
 					},
 					name: "str",
 					value: "ABC",
+					attributes: [],
 				},
 			],
 		};
@@ -154,18 +160,21 @@ describe(`simple fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "SinglePrimitiveFieldNode",
 					dataType: uint32(),
 					name: "myint",
 					value: 7,
+					attributes: [],
 				},
 				{
 					type: "SinglePrimitiveFieldNode",
 					dataType: float(),
 					name: "test",
 					value: 9.5,
+					attributes: [],
 				},
 			],
 		};
@@ -182,12 +191,14 @@ describe(`simple fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "ArrayPrimitiveFieldNode",
 					dataType: uint32(),
 					name: "myints",
 					children: [10, 20, 30],
+					attributes: [],
 				},
 			],
 		};
@@ -207,6 +218,7 @@ describe(`simple fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "ArrayPrimitiveFieldNode",
@@ -215,6 +227,7 @@ describe(`simple fields`, () => {
 					},
 					name: "str",
 					children: ["ABC", "def", "ggggg"],
+					attributes: [],
 				},
 			],
 		};
@@ -234,6 +247,7 @@ describe(`simple fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "ArrayPrimitiveFieldNode",
@@ -243,6 +257,7 @@ describe(`simple fields`, () => {
 					},
 					name: "str",
 					children: ["ABC", "def", "ggggg"],
+					attributes: [],
 				},
 			],
 		};
@@ -262,18 +277,21 @@ describe(`simple fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "ArrayPrimitiveFieldNode",
 					dataType: uint32(),
 					name: "myints",
 					children: [10, 20, 30],
+					attributes: [],
 				},
 				{
 					type: "ArrayPrimitiveFieldNode",
 					dataType: int16(),
 					name: "otherints",
 					children: [-45],
+					attributes: [],
 				},
 			],
 		};
@@ -296,24 +314,28 @@ describe(`simple fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "ArrayPrimitiveFieldNode",
 					dataType: uint32(),
 					name: "myints",
 					children: [10, 20, 30],
+					attributes: [],
 				},
 				{
 					type: "SinglePrimitiveFieldNode",
 					dataType: float(),
 					name: "bar",
 					value: 3.25,
+					attributes: [],
 				},
 				{
 					type: "ArrayPrimitiveFieldNode",
 					dataType: nint8(),
 					name: "otherints",
 					children: [-9],
+					attributes: [],
 				},
 			],
 		};
@@ -339,20 +361,24 @@ describe(`struct fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "SingleStructFieldNode",
 					dataType: "MyStruct",
 					name: "bar",
+					attributes: [],
 					value: {
 						type: "StructNode",
 						dataType: "MyStruct",
+						attributes: [],
 						children: [
 							{
 								type: "SinglePrimitiveFieldNode",
 								dataType: double(),
 								name: "bazA",
 								value: 7.75,
+								attributes: [],
 							},
 						]
 					},
@@ -373,20 +399,24 @@ describe(`struct fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "SingleStructFieldNode",
 					dataType: "MyStruct",
 					name: "bar",
+					attributes: [],
 					value: {
 						type: "StructNode",
 						dataType: "MyStruct",
+						attributes: [],
 						children: [
 							{
 								type: "SinglePrimitiveFieldNode",
 								dataType: float(),
 								name: "bazA",
 								value: 7.75,
+								attributes: [],
 							},
 						]
 					},
@@ -395,21 +425,25 @@ describe(`struct fields`, () => {
 					type: "SingleStructFieldNode",
 					dataType: "MyOtherStruct",
 					name: "barB",
+					attributes: [],
 					value: {
 						type: "StructNode",
 						dataType: "MyOtherStruct",
+						attributes: [],
 						children: [
 							{
 								type: "SinglePrimitiveFieldNode",
 								dataType: int16(),
 								name: "bazB",
 								value: 7,
+								attributes: [],
 							},
 							{
 								type: "SinglePrimitiveFieldNode",
 								dataType: int16(),
 								name: "bazC",
 								value: -7,
+								attributes: [],
 							},
 						]
 					},
@@ -434,33 +468,39 @@ describe(`struct fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "ArrayStructFieldNode",
 					dataType: "MyStruct",
 					name: "bar",
+					attributes: [],
 					children: [
 						{
 							type: "StructNode",
 							dataType: "MyStruct",
+							attributes: [],
 							children: [
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: float(),
 									name: "bazA",
 									value: 7.75,
+									attributes: [],
 								},
 							]
 						},
 						{
 							type: "StructNode",
 							dataType: "MyStruct",
+							attributes: [],
 							children: [
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: float(),
 									name: "bazA",
 									value: 4.125,
+									attributes: [],
 								},
 							]
 						},
@@ -487,33 +527,39 @@ describe(`struct fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "ArrayStructFieldNode",
 					dataType: "MyStruct",
 					name: "bar",
+					attributes: [],
 					children: [
 						{
 							type: "StructNode",
 							dataType: "MyStruct",
+							attributes: [],
 							children: [
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: float(),
 									name: "bazA",
 									value: 7.75,
+									attributes: [],
 								},
 							]
 						},
 						{
 							type: "StructNode",
 							dataType: "MyStruct",
+							attributes: [],
 							children: [
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: float(),
 									name: "bazA",
 									value: 4.125,
+									attributes: [],
 								},
 							]
 						},
@@ -523,22 +569,26 @@ describe(`struct fields`, () => {
 					type: "ArrayStructFieldNode",
 					dataType: "MyOtherStruct",
 					name: "barB",
+					attributes: [],
 					children: [
 						{
 							type: "StructNode",
 							dataType: "MyOtherStruct",
+							attributes: [],
 							children: [
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: int8(),
 									name: "bazA",
 									value: -50,
+									attributes: [],
 								},
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: uint8(),
 									name: "bazB",
 									value: 200,
+									attributes: [],
 								},
 							]
 						},
@@ -571,33 +621,39 @@ describe(`struct fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "ArrayStructFieldNode",
 					dataType: "MyStruct",
 					name: "bar",
+					attributes: [],
 					children: [
 						{
 							type: "StructNode",
 							dataType: "MyStruct",
+							attributes: [],
 							children: [
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: float(),
 									name: "bazA",
 									value: 7.75,
+									attributes: [],
 								},
 							]
 						},
 						{
 							type: "StructNode",
 							dataType: "MyStruct",
+							attributes: [],
 							children: [
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: float(),
 									name: "bazA",
 									value: 4.125,
+									attributes: [],
 								},
 							]
 						},
@@ -607,15 +663,18 @@ describe(`struct fields`, () => {
 					type: "SingleStructFieldNode",
 					dataType: "YetAnotherStruct",
 					name: "yetAnother",
+					attributes: [],
 					value: {
 						type: "StructNode",
 						dataType: "YetAnotherStruct",
+						attributes: [],
 						children: [
 							{
 								type: "SinglePrimitiveFieldNode",
 								dataType: float(),
 								name: "testing",
 								value: -0.5,
+								attributes: [],
 							},
 						]
 					},
@@ -624,22 +683,26 @@ describe(`struct fields`, () => {
 					type: "ArrayStructFieldNode",
 					dataType: "MyOtherStruct",
 					name: "barB",
+					attributes: [],
 					children: [
 						{
 							type: "StructNode",
 							dataType: "MyOtherStruct",
+							attributes: [],
 							children: [
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: int8(),
 									name: "bazA",
 									value: -50,
+									attributes: [],
 								},
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: uint8(),
 									name: "bazB",
 									value: 200,
+									attributes: [],
 								},
 							]
 						},
@@ -677,33 +740,39 @@ describe(`complex mixed`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "ArrayStructFieldNode",
 					dataType: "MyStruct",
 					name: "bar",
+					attributes: [],
 					children: [
 						{
 							type: "StructNode",
 							dataType: "MyStruct",
+							attributes: [],
 							children: [
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: float(),
 									name: "bazA",
 									value: 7.75,
+									attributes: [],
 								},
 							]
 						},
 						{
 							type: "StructNode",
 							dataType: "MyStruct",
+							attributes: [],
 							children: [
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: float(),
 									name: "bazA",
 									value: 4.125,
+									attributes: [],
 								},
 							]
 						},
@@ -714,20 +783,24 @@ describe(`complex mixed`, () => {
 					dataType: int32(),
 					name: "someField",
 					value: -100,
+					attributes: [],
 				},
 				{
 					type: "SingleStructFieldNode",
 					dataType: "YetAnotherStruct",
 					name: "yetAnother",
+					attributes: [],
 					value: {
 						type: "StructNode",
 						dataType: "YetAnotherStruct",
+						attributes: [],
 						children: [
 							{
 								type: "SinglePrimitiveFieldNode",
 								dataType: float(),
 								name: "testing",
 								value: -0.5,
+								attributes: [],
 							},
 						]
 					},
@@ -737,27 +810,32 @@ describe(`complex mixed`, () => {
 					dataType: int16(),
 					name: "myArray",
 					children: [1000, -2000],
+					attributes: [],
 				},
 				{
 					type: "ArrayStructFieldNode",
 					dataType: "MyOtherStruct",
 					name: "barB",
+					attributes: [],
 					children: [
 						{
 							type: "StructNode",
 							dataType: "MyOtherStruct",
+							attributes: [],
 							children: [
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: int8(),
 									name: "bazA",
 									value: -50,
+									attributes: [],
 								},
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: uint8(),
 									name: "bazB",
 									value: 200,
+									attributes: [],
 								},
 							]
 						},
@@ -798,74 +876,88 @@ describe(`complex mixed`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
+			attributes: [],
 			children: [
 				{
 					type: "SinglePrimitiveFieldNode",
 					dataType: int32(),
 					name: "placeholder",
 					value: -100,
+					attributes: [],
 				},
 				{
 					type: "ArrayStructFieldNode",
 					dataType: "MyStruct",
 					name: "bar",
+					attributes: [],
 					children: [
 						{
 							type: "StructNode",
 							dataType: "MyStruct",
+							attributes: [],
 							children: [
 								{
 									type: "SinglePrimitiveFieldNode",
 									dataType: float(),
 									name: "bazA",
 									value: -7.75,
+									attributes: [],
 								},
 								{
 									type: "SingleStructFieldNode",
 									dataType: "MyOtherStruct",
 									name: "otherStruct",
+									attributes: [],
 									value: {
 										type: "StructNode",
 										dataType: "MyOtherStruct",
+										attributes: [],
 										children: [
 											{
 												type: "SinglePrimitiveFieldNode",
 												dataType: unorm8(),
 												name: "a",
 												value: 185 / 255,
+												attributes: [],
 											},
 											{
 												type: "SinglePrimitiveFieldNode",
 												dataType: uint8(),
 												name: "b",
 												value: 10,
+												attributes: [],
 											},
 											{
 												type: "ArrayStructFieldNode",
 												dataType: "ThirdLevel",
 												name: "third",
+												attributes: [],
 												children: [
 													{
 														type: "StructNode",
 														dataType: "ThirdLevel",
+														attributes: [],
 														children: [
 															{
 																type: "SinglePrimitiveFieldNode",
 																dataType: int8(),
 																name: "x",
 																value: 1,
+																attributes: [],
 															},
 														],
 													},
 													{
 														type: "StructNode",
 														dataType: "ThirdLevel",
+														attributes: [],
 														children: [
 															{
 																type: "SinglePrimitiveFieldNode",
 																dataType: int8(),
 																name: "x",
 																value: -1,
+																attributes: [],
 															},
 														],
 													},
@@ -883,6 +975,7 @@ describe(`complex mixed`, () => {
 					dataType: uint32(),
 					name: "anotherField",
 					value: 500,
+					attributes: [],
 				},
 			],
 		};

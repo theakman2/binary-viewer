@@ -29,6 +29,7 @@ export interface SinglePrimitiveVarStatementTmpl<T> {
 	type: 'SinglePrimitiveVarStatement';
 	dataType: T;
 	identifier: string;
+	attributes: string[];
 }
 
 export type SinglePrimitiveVarStatement = SinglePrimitiveVarStatementTmpl<PrimitiveDataType>;
@@ -37,6 +38,7 @@ export interface SingleStructVarStatement {
 	type: 'SingleStructVarStatement';
 	dataType: string;
 	identifier: string;
+	attributes: string[];
 }
 
 export type SingleVarStatement = SinglePrimitiveVarStatement | SingleStructVarStatement;
@@ -46,6 +48,7 @@ export interface ArrayPrimitiveVarStatementTmpl<T> {
 	dataType: T;
 	identifier: string;
 	count: number | string;
+	attributes: string[];
 }
 
 export type ArrayPrimitiveVarStatement = ArrayPrimitiveVarStatementTmpl<PrimitiveDataType>;
@@ -55,6 +58,7 @@ export interface ArrayStructVarStatement {
 	dataType: string;
 	identifier: string;
 	count: number | string;
+	attributes: string[];
 }
 
 export type ArrayVarStatement = ArrayPrimitiveVarStatement | ArrayStructVarStatement;
@@ -70,6 +74,7 @@ export interface Struct {
 	type: "struct";
 	identifier: string;
 	stmts: FieldStatement[];
+	attributes: string[];
 }
 
 export interface Root {

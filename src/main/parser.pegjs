@@ -1,21 +1,26 @@
-start = ignorable s:StructStatement* d:RootStatement? {
+start = Ignorable s:StructStatement* d:RootStatement? {
 	return {
 		structs: s,
 		root: d || "Main",
 	};
 }
 
-multi_line_comment = "/*" (!"*/" .)* "*/"
+MultiLineComment = "/*" (!"*/" .)* "*/"
 
-single_line_comment = '//' [^\n]*
+SingleLineComment = '//' [^\n]*
 
-ignorable = (single_line_comment / multi_line_comment / [ \t\n\r])*
+Ignorable = (SingleLineComment / MultiLineComment / [ \t\n\r])*
 
-Struct = ident:StructIdentifier ignorable "{" ignorable stmts:FieldStatement+ ignorable "}" {
+Attr = "@" i:Identifier Ignorable {
+	return i;
+}
+
+Struct = a:Attr* ident:StructIdentifier Ignorable "{" Ignorable stmts:FieldStatement+ Ignorable "}" {
 	return {
 		type: 'Struct',
 		identifier: ident,
 		stmts: stmts,
+		attributes: a,
 	};
 }
 
@@ -47,7 +52,7 @@ FloatDataType = v:('float' / 'double') {
 	};
 }
 
-FixedLengthStringDataType = 'string' ignorable '(' ignorable v:([0-9]+) ignorable ')' {
+FixedLengthStringDataType = 'string' Ignorable '(' Ignorable v:([0-9]+) Ignorable ')' {
 	return {
 		type: 'FixedLengthStringDataType',
 		size: parseInt(v, 10),
@@ -68,7 +73,7 @@ Identifier = ident:([a-zA-Z][a-zA-Z0-9_]*) { return ident[0] + ident[1].join('')
 
 Intrinsic = v:("__" [A-Z0-9]+ "__") { return v[0] + v[1].join('') + v[2]; }
 
-SinglePrimitiveVarStatement = ti:PrimitiveDataType ignorable i:Identifier ignorable ";" ignorable {
+SinglePrimitiveVarStatement = ti:PrimitiveDataType Ignorable i:Identifier Ignorable ";" Ignorable {
 	return {
 		type: 'SinglePrimitiveVarStatement',
 		dataType: ti,
@@ -76,7 +81,7 @@ SinglePrimitiveVarStatement = ti:PrimitiveDataType ignorable i:Identifier ignora
 	};
 }
 
-SingleStructVarStatement = ti:StructIdentifier ignorable i:Identifier ignorable ";" ignorable {
+SingleStructVarStatement = ti:StructIdentifier Ignorable i:Identifier Ignorable ";" Ignorable {
 	return {
 		type: 'SingleStructVarStatement',
 		dataType: ti,
@@ -84,7 +89,7 @@ SingleStructVarStatement = ti:StructIdentifier ignorable i:Identifier ignorable 
 	};
 }
 
-ArrayPrimitiveVarStatement = t:PrimitiveDataType ignorable i:Identifier ignorable "[" ignorable v:(Integer/Identifier/Intrinsic) ignorable "]" ignorable ";" ignorable {
+ArrayPrimitiveVarStatement = t:PrimitiveDataType Ignorable i:Identifier Ignorable "[" Ignorable v:(Integer/Identifier/Intrinsic) Ignorable "]" Ignorable ";" Ignorable {
 	return {
 		type: 'ArrayPrimitiveVarStatement',
 		dataType: t,
@@ -93,7 +98,7 @@ ArrayPrimitiveVarStatement = t:PrimitiveDataType ignorable i:Identifier ignorabl
 	};
 }
 
-ArrayStructVarStatement = t:StructIdentifier ignorable i:Identifier ignorable "[" ignorable v:(Integer/Identifier/Intrinsic) ignorable "]" ignorable ";" ignorable {
+ArrayStructVarStatement = t:StructIdentifier Ignorable i:Identifier Ignorable "[" Ignorable v:(Integer/Identifier/Intrinsic) Ignorable "]" Ignorable ";" Ignorable {
 	return {
 		type: 'ArrayStructVarStatement',
 		dataType: t,
@@ -102,11 +107,11 @@ ArrayStructVarStatement = t:StructIdentifier ignorable i:Identifier ignorable "[
 	};
 }
 
-StructStatement = t:Struct ignorable ";" ignorable {
+StructStatement = t:Struct Ignorable ";" Ignorable {
 	return t;
 }
 
-RootStatement = "root" ignorable "=" ignorable i:Identifier ignorable ";" ignorable {
+RootStatement = "root" Ignorable "=" Ignorable i:Identifier Ignorable ";" Ignorable {
 	return i;
 }
 
@@ -114,4 +119,6 @@ Integer = v:[0-9]+ {
 	return parseInt(v, 10);
 }
 
-FieldStatement = SinglePrimitiveVarStatement / SingleStructVarStatement / ArrayPrimitiveVarStatement / ArrayStructVarStatement
+FieldStatement = a:Attr* f:(SinglePrimitiveVarStatement / SingleStructVarStatement / ArrayPrimitiveVarStatement / ArrayStructVarStatement) {
+	return {...f, attributes: a};
+}

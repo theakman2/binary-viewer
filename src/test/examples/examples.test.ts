@@ -244,6 +244,36 @@ describe(`array types`, () => {
 	});
 });
 
+describe(`attributes`, () => {
+	test(`@hide`, () => {
+		dv.setUint8(0, 50);
+		dv.setUint8(1, 51);
+		dv.setUint8(2, 52);
+		dv.setUint8(3, 53);
+
+		expect(parse(
+			`
+				Main {
+					uint8 a;
+					uint8 b;
+
+					// This field will be consumed but not displayed.
+					@hide uint8 c;
+
+					uint8 d;
+				};
+			`,
+			dv
+		)).toBe(nice(`
+			Main {
+				uint8 a = 50;
+				uint8 b = 51;
+				uint8 d = 53;
+			};
+		`));
+	});
+});
+
 describe(`intrinsics`, () => {
 	test(`__LEFT__`, () => {
 		const shortDv = new DataView(dv.buffer, 0, 9);
