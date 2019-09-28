@@ -1,34 +1,68 @@
-export type DataType = "u8" | "u16" | "u32" | "i8" | "i16" | "i32" | "f32" | "f64" | "norm";
+export type IntDataShape = "signed" | "unsigned" | "normal";
 
-export interface SingleSimpleVarStatement {
-	type: 'SingleSimpleVarStatement';
-	kind: DataType;
+export type IntDataMax = "int" | "norm";
+
+export interface IntDataType {
+	type: "IntDataType";
+	shape: IntDataShape;
+	max: IntDataMax;
+	size: number;
+}
+
+export interface FloatDataType {
+	type: "FloatDataType";
+	size: number;
+}
+
+export interface FixedLengthStringDataType {
+	type: "FixedLengthStringDataType";
+	size: number;
+}
+
+export interface VariableLengthStringDataType {
+	type: "VariableLengthStringDataType";
+}
+
+export type PrimitiveDataType = IntDataType | FloatDataType | FixedLengthStringDataType | VariableLengthStringDataType;
+
+export interface SinglePrimitiveVarStatementTmpl<T> {
+	type: 'SinglePrimitiveVarStatement';
+	dataType: T;
 	identifier: string;
 }
+
+export type SinglePrimitiveVarStatement = SinglePrimitiveVarStatementTmpl<PrimitiveDataType>;
 
 export interface SingleStructVarStatement {
 	type: 'SingleStructVarStatement';
-	kind: string;
+	dataType: string;
 	identifier: string;
 }
 
-export type SingleVarStatement = SingleSimpleVarStatement | SingleStructVarStatement;
+export type SingleVarStatement = SinglePrimitiveVarStatement | SingleStructVarStatement;
 
-export interface ArraySimpleVarStatement {
-	type: 'ArraySimpleVarStatement';
-	kind: DataType;
+export interface ArrayPrimitiveVarStatementTmpl<T> {
+	type: 'ArrayPrimitiveVarStatement';
+	dataType: T;
 	identifier: string;
 	count: number | string;
 }
+
+export type ArrayPrimitiveVarStatement = ArrayPrimitiveVarStatementTmpl<PrimitiveDataType>;
 
 export interface ArrayStructVarStatement {
 	type: 'ArrayStructVarStatement';
-	kind: string;
+	dataType: string;
 	identifier: string;
 	count: number | string;
 }
 
-export type ArrayVarStatement = ArraySimpleVarStatement | ArrayStructVarStatement;
+export type ArrayVarStatement = ArrayPrimitiveVarStatement | ArrayStructVarStatement;
+
+export type PrimitiveVarStatementTmpl<T> = SinglePrimitiveVarStatementTmpl<T> | ArrayPrimitiveVarStatementTmpl<T>;
+export type PrimitiveVarStatement = PrimitiveVarStatementTmpl<PrimitiveDataType>;
+
+export type StructVarStatement = SingleStructVarStatement | ArrayStructVarStatement;
 
 export type FieldStatement = SingleVarStatement | ArrayVarStatement;
 

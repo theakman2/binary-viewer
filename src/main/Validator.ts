@@ -51,12 +51,12 @@ export class Validator {
 				if (t.identifiers[field.identifier]) {
 					throw new Error(`Identifier '${field.identifier}' already used in struct '${struct.identifier}'.`);
 				}
-				if (field.type == "ArraySimpleVarStatement" || field.type == "ArrayStructVarStatement") {
+				if (field.type == "ArrayPrimitiveVarStatement" || field.type == "ArrayStructVarStatement") {
 					if ((typeof field.count === "string") && (field.count[0] !== '_')) {
 						if (!t.identifiers[field.count]) {
 							throw new Error(`Field identifier '${field.count}' not found in struct '${struct.identifier}'.`);
 						}
-						if (t.identifiers[field.count].type !== "SingleSimpleVarStatement") {
+						if (t.identifiers[field.count].type !== "SinglePrimitiveVarStatement") {
 							throw new Error(`Field identifier '${field.count}' must be a non-array field in struct '${struct.identifier}'.`);
 						}
 					}
@@ -69,11 +69,13 @@ export class Validator {
 						}
 					}
 				}
-				if (field.kind.match(/^[A-Z]/) && !structsByName[field.kind]) {
-					throw new Error(`Field type '${field.kind}' not found in struct '${struct.identifier}'.`);
+				if (field.type === "ArrayStructVarStatement" || field.type === "SingleStructVarStatement") {
+					if (!structsByName[field.dataType]) {
+						throw new Error(`Field type '${field.dataType}' not found in struct '${struct.identifier}'.`);
+					}
+					t.types[field.dataType] = field;
 				}
 				t.identifiers[field.identifier] = field;
-				t.types[field.kind] = field;
 			}
 		}
 		if (!structsByName[this._input.root]) {

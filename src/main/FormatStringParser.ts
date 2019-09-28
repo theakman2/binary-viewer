@@ -1,5 +1,5 @@
 import * as FormatStringAst from './FormatStringAst';
-import { parse } from './parser.pegjs';
+import { parse } from './parser.dist';
 
 export class FormatStringParser {
 	private readonly _str: string;

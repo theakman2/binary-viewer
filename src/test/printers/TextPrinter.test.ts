@@ -1,13 +1,84 @@
 import * as BinaryContentAst from '../../main/BinaryContentAst';
+import * as FormatStringAst from '../../main/FormatStringAst';
 
-import {TextPrinter} from '../../main/printers/TextPrinter';
+import { TextPrinter } from '../../main/printers/TextPrinter';
+import { nice } from '../common';
 
-function nice(str: string): string {
-	const parts = str.split(`\n`);
-	const matches = parts[1].match(`^\t+`);
-	const indentToRemove = matches ? matches[0].length : 0;
-	const r = new RegExp(`^${'\t'.repeat(indentToRemove)}`);
-	return str.trim().split(`\n`).map(v => v.replace(r, '')).join('\n') + '\n';
+function uint32(): FormatStringAst.IntDataType {
+	return {
+		type: "IntDataType",
+		shape: "unsigned",
+		max: "int",
+		size: 32,
+	};
+}
+
+function int32(): FormatStringAst.IntDataType {
+	return {
+		type: "IntDataType",
+		shape: "signed",
+		max: "int",
+		size: 32,
+	};
+}
+
+function int16(): FormatStringAst.IntDataType {
+	return {
+		type: "IntDataType",
+		shape: "signed",
+		max: "int",
+		size: 16,
+	};
+}
+
+function int8(): FormatStringAst.IntDataType {
+	return {
+		type: "IntDataType",
+		shape: "signed",
+		max: "int",
+		size: 8,
+	};
+}
+
+function uint8(): FormatStringAst.IntDataType {
+	return {
+		type: "IntDataType",
+		shape: "unsigned",
+		max: "int",
+		size: 8,
+	};
+}
+
+function unorm8(): FormatStringAst.IntDataType {
+	return {
+		type: "IntDataType",
+		shape: "unsigned",
+		max: "norm",
+		size: 8,
+	};
+}
+
+function nint8(): FormatStringAst.IntDataType {
+	return {
+		type: "IntDataType",
+		shape: "normal",
+		max: "int",
+		size: 8,
+	};
+}
+
+function float(): FormatStringAst.FloatDataType {
+	return {
+		type: "FloatDataType",
+		size: 32,
+	};
+}
+
+function double(): FormatStringAst.FloatDataType {
+	return {
+		type: "FloatDataType",
+		size: 64,
+	};
 }
 
 describe(`simple fields`, () => {
@@ -17,8 +88,8 @@ describe(`simple fields`, () => {
 			dataType: "Foo",
 			children: [
 				{
-					type: "SingleSimpleFieldNode",
-					dataType: "u32",
+					type: "SinglePrimitiveFieldNode",
+					dataType: uint32(),
 					name: "myint",
 					value: 7,
 				},
@@ -27,25 +98,72 @@ describe(`simple fields`, () => {
 		const text = new TextPrinter(ast).print();
 		expect(text).toBe(nice(`
 			Foo {
-				u32 myint = 7;
+				uint32 myint = 7;
 			};
 		`));
 	});
-	
+
+	test(`one non-array simple variable string field`, () => {
+		const ast: BinaryContentAst.StructNode = {
+			type: "StructNode",
+			dataType: "Foo",
+			children: [
+				{
+					type: "SinglePrimitiveFieldNode",
+					dataType: {
+						type: "VariableLengthStringDataType"
+					},
+					name: "str",
+					value: "ABC",
+				},
+			],
+		};
+		const text = new TextPrinter(ast).print();
+		expect(text).toBe(nice(`
+			Foo {
+				string str = ABC;
+			};
+		`));
+	});
+
+	test(`one non-array simple fixed string field`, () => {
+		const ast: BinaryContentAst.StructNode = {
+			type: "StructNode",
+			dataType: "Foo",
+			children: [
+				{
+					type: "SinglePrimitiveFieldNode",
+					dataType: {
+						type: "FixedLengthStringDataType",
+						size: 8,
+					},
+					name: "str",
+					value: "ABC",
+				},
+			],
+		};
+		const text = new TextPrinter(ast).print();
+		expect(text).toBe(nice(`
+			Foo {
+				string(8) str = ABC;
+			};
+		`));
+	});
+
 	test(`multiple non-array simple fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
 			children: [
 				{
-					type: "SingleSimpleFieldNode",
-					dataType: "u32",
+					type: "SinglePrimitiveFieldNode",
+					dataType: uint32(),
 					name: "myint",
 					value: 7,
 				},
 				{
-					type: "SingleSimpleFieldNode",
-					dataType: "f32",
+					type: "SinglePrimitiveFieldNode",
+					dataType: float(),
 					name: "test",
 					value: 9.5,
 				},
@@ -54,20 +172,20 @@ describe(`simple fields`, () => {
 		const text = new TextPrinter(ast).print();
 		expect(text).toBe(nice(`
 			Foo {
-				u32 myint = 7;
-				f32 test = 9.5;
+				uint32 myint = 7;
+				float test = 9.5;
 			};
 		`));
 	});
-	
+
 	test(`one array simple field`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
 			children: [
 				{
-					type: "ArraySimpleFieldNode",
-					dataType: "u32",
+					type: "ArrayPrimitiveFieldNode",
+					dataType: uint32(),
 					name: "myints",
 					children: [10, 20, 30],
 				},
@@ -76,7 +194,7 @@ describe(`simple fields`, () => {
 		const text = new TextPrinter(ast).print();
 		expect(text).toBe(nice(`
 			Foo {
-				u32 myints[3] = [
+				uint32 myints[3] = [
 					10,
 					20,
 					30
@@ -84,21 +202,76 @@ describe(`simple fields`, () => {
 			};
 		`));
 	});
-	
+
+	test(`one array variable string field`, () => {
+		const ast: BinaryContentAst.StructNode = {
+			type: "StructNode",
+			dataType: "Foo",
+			children: [
+				{
+					type: "ArrayPrimitiveFieldNode",
+					dataType: {
+						type: "VariableLengthStringDataType",
+					},
+					name: "str",
+					children: ["ABC", "def", "ggggg"],
+				},
+			],
+		};
+		const text = new TextPrinter(ast).print();
+		expect(text).toBe(nice(`
+			Foo {
+				string str[3] = [
+					ABC,
+					def,
+					ggggg
+				];
+			};
+		`));
+	});
+
+	test(`one array fixed string field`, () => {
+		const ast: BinaryContentAst.StructNode = {
+			type: "StructNode",
+			dataType: "Foo",
+			children: [
+				{
+					type: "ArrayPrimitiveFieldNode",
+					dataType: {
+						type: "FixedLengthStringDataType",
+						size: 6,
+					},
+					name: "str",
+					children: ["ABC", "def", "ggggg"],
+				},
+			],
+		};
+		const text = new TextPrinter(ast).print();
+		expect(text).toBe(nice(`
+			Foo {
+				string(6) str[3] = [
+					ABC,
+					def,
+					ggggg
+				];
+			};
+		`));
+	});
+
 	test(`multiple array simple fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
 			children: [
 				{
-					type: "ArraySimpleFieldNode",
-					dataType: "u32",
+					type: "ArrayPrimitiveFieldNode",
+					dataType: uint32(),
 					name: "myints",
 					children: [10, 20, 30],
 				},
 				{
-					type: "ArraySimpleFieldNode",
-					dataType: "i16",
+					type: "ArrayPrimitiveFieldNode",
+					dataType: int16(),
 					name: "otherints",
 					children: [-45],
 				},
@@ -107,54 +280,54 @@ describe(`simple fields`, () => {
 		const text = new TextPrinter(ast).print();
 		expect(text).toBe(nice(`
 			Foo {
-				u32 myints[3] = [
+				uint32 myints[3] = [
 					10,
 					20,
 					30
 				];
-				i16 otherints[1] = [
+				int16 otherints[1] = [
 					-45
 				];
 			};
 		`));
 	});
-	
+
 	test(`multiple mixed (array + non-array) simple fields`, () => {
 		const ast: BinaryContentAst.StructNode = {
 			type: "StructNode",
 			dataType: "Foo",
 			children: [
 				{
-					type: "ArraySimpleFieldNode",
-					dataType: "u32",
+					type: "ArrayPrimitiveFieldNode",
+					dataType: uint32(),
 					name: "myints",
 					children: [10, 20, 30],
 				},
 				{
-					type: "SingleSimpleFieldNode",
-					dataType: "f32",
+					type: "SinglePrimitiveFieldNode",
+					dataType: float(),
 					name: "bar",
 					value: 3.25,
 				},
 				{
-					type: "ArraySimpleFieldNode",
-					dataType: "i16",
+					type: "ArrayPrimitiveFieldNode",
+					dataType: nint8(),
 					name: "otherints",
-					children: [-45],
+					children: [-9],
 				},
 			],
 		};
 		const text = new TextPrinter(ast).print();
 		expect(text).toBe(nice(`
 			Foo {
-				u32 myints[3] = [
+				uint32 myints[3] = [
 					10,
 					20,
 					30
 				];
-				f32 bar = 3.25;
-				i16 otherints[1] = [
-					-45
+				float bar = 3.25;
+				nint8 otherints[1] = [
+					-9
 				];
 			};
 		`));
@@ -176,8 +349,8 @@ describe(`struct fields`, () => {
 						dataType: "MyStruct",
 						children: [
 							{
-								type: "SingleSimpleFieldNode",
-								dataType: "f32",
+								type: "SinglePrimitiveFieldNode",
+								dataType: double(),
 								name: "bazA",
 								value: 7.75,
 							},
@@ -190,7 +363,7 @@ describe(`struct fields`, () => {
 		expect(text).toBe(nice(`
 			Foo {
 				MyStruct bar = {
-					f32 bazA = 7.75;
+					double bazA = 7.75;
 				};
 			};
 		`));
@@ -210,8 +383,8 @@ describe(`struct fields`, () => {
 						dataType: "MyStruct",
 						children: [
 							{
-								type: "SingleSimpleFieldNode",
-								dataType: "f32",
+								type: "SinglePrimitiveFieldNode",
+								dataType: float(),
 								name: "bazA",
 								value: 7.75,
 							},
@@ -227,14 +400,14 @@ describe(`struct fields`, () => {
 						dataType: "MyOtherStruct",
 						children: [
 							{
-								type: "SingleSimpleFieldNode",
-								dataType: "i16",
+								type: "SinglePrimitiveFieldNode",
+								dataType: int16(),
 								name: "bazB",
 								value: 7,
 							},
 							{
-								type: "SingleSimpleFieldNode",
-								dataType: "i16",
+								type: "SinglePrimitiveFieldNode",
+								dataType: int16(),
 								name: "bazC",
 								value: -7,
 							},
@@ -247,11 +420,11 @@ describe(`struct fields`, () => {
 		expect(text).toBe(nice(`
 			Foo {
 				MyStruct bar = {
-					f32 bazA = 7.75;
+					float bazA = 7.75;
 				};
 				MyOtherStruct barB = {
-					i16 bazB = 7;
-					i16 bazC = -7;
+					int16 bazB = 7;
+					int16 bazC = -7;
 				};
 			};
 		`));
@@ -272,8 +445,8 @@ describe(`struct fields`, () => {
 							dataType: "MyStruct",
 							children: [
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "f32",
+									type: "SinglePrimitiveFieldNode",
+									dataType: float(),
 									name: "bazA",
 									value: 7.75,
 								},
@@ -284,8 +457,8 @@ describe(`struct fields`, () => {
 							dataType: "MyStruct",
 							children: [
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "f32",
+									type: "SinglePrimitiveFieldNode",
+									dataType: float(),
 									name: "bazA",
 									value: 4.125,
 								},
@@ -300,10 +473,10 @@ describe(`struct fields`, () => {
 			Foo {
 				MyStruct bar[2] = [
 					MyStruct {
-						f32 bazA = 7.75;
+						float bazA = 7.75;
 					};
 					MyStruct {
-						f32 bazA = 4.125;
+						float bazA = 4.125;
 					};
 				];
 			};
@@ -325,8 +498,8 @@ describe(`struct fields`, () => {
 							dataType: "MyStruct",
 							children: [
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "f32",
+									type: "SinglePrimitiveFieldNode",
+									dataType: float(),
 									name: "bazA",
 									value: 7.75,
 								},
@@ -337,8 +510,8 @@ describe(`struct fields`, () => {
 							dataType: "MyStruct",
 							children: [
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "f32",
+									type: "SinglePrimitiveFieldNode",
+									dataType: float(),
 									name: "bazA",
 									value: 4.125,
 								},
@@ -356,14 +529,14 @@ describe(`struct fields`, () => {
 							dataType: "MyOtherStruct",
 							children: [
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "i8",
+									type: "SinglePrimitiveFieldNode",
+									dataType: int8(),
 									name: "bazA",
 									value: -50,
 								},
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "u8",
+									type: "SinglePrimitiveFieldNode",
+									dataType: uint8(),
 									name: "bazB",
 									value: 200,
 								},
@@ -378,16 +551,16 @@ describe(`struct fields`, () => {
 			Foo {
 				MyStruct bar[2] = [
 					MyStruct {
-						f32 bazA = 7.75;
+						float bazA = 7.75;
 					};
 					MyStruct {
-						f32 bazA = 4.125;
+						float bazA = 4.125;
 					};
 				];
 				MyOtherStruct barB[1] = [
 					MyOtherStruct {
-						i8 bazA = -50;
-						u8 bazB = 200;
+						int8 bazA = -50;
+						uint8 bazB = 200;
 					};
 				];
 			};
@@ -409,8 +582,8 @@ describe(`struct fields`, () => {
 							dataType: "MyStruct",
 							children: [
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "f32",
+									type: "SinglePrimitiveFieldNode",
+									dataType: float(),
 									name: "bazA",
 									value: 7.75,
 								},
@@ -421,8 +594,8 @@ describe(`struct fields`, () => {
 							dataType: "MyStruct",
 							children: [
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "f32",
+									type: "SinglePrimitiveFieldNode",
+									dataType: float(),
 									name: "bazA",
 									value: 4.125,
 								},
@@ -439,8 +612,8 @@ describe(`struct fields`, () => {
 						dataType: "YetAnotherStruct",
 						children: [
 							{
-								type: "SingleSimpleFieldNode",
-								dataType: "f32",
+								type: "SinglePrimitiveFieldNode",
+								dataType: float(),
 								name: "testing",
 								value: -0.5,
 							},
@@ -457,14 +630,14 @@ describe(`struct fields`, () => {
 							dataType: "MyOtherStruct",
 							children: [
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "i8",
+									type: "SinglePrimitiveFieldNode",
+									dataType: int8(),
 									name: "bazA",
 									value: -50,
 								},
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "u8",
+									type: "SinglePrimitiveFieldNode",
+									dataType: uint8(),
 									name: "bazB",
 									value: 200,
 								},
@@ -479,19 +652,19 @@ describe(`struct fields`, () => {
 			Foo {
 				MyStruct bar[2] = [
 					MyStruct {
-						f32 bazA = 7.75;
+						float bazA = 7.75;
 					};
 					MyStruct {
-						f32 bazA = 4.125;
+						float bazA = 4.125;
 					};
 				];
 				YetAnotherStruct yetAnother = {
-					f32 testing = -0.5;
+					float testing = -0.5;
 				};
 				MyOtherStruct barB[1] = [
 					MyOtherStruct {
-						i8 bazA = -50;
-						u8 bazB = 200;
+						int8 bazA = -50;
+						uint8 bazB = 200;
 					};
 				];
 			};
@@ -515,8 +688,8 @@ describe(`complex mixed`, () => {
 							dataType: "MyStruct",
 							children: [
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "f32",
+									type: "SinglePrimitiveFieldNode",
+									dataType: float(),
 									name: "bazA",
 									value: 7.75,
 								},
@@ -527,8 +700,8 @@ describe(`complex mixed`, () => {
 							dataType: "MyStruct",
 							children: [
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "f32",
+									type: "SinglePrimitiveFieldNode",
+									dataType: float(),
 									name: "bazA",
 									value: 4.125,
 								},
@@ -537,8 +710,8 @@ describe(`complex mixed`, () => {
 					],
 				},
 				{
-					type: "SingleSimpleFieldNode",
-					dataType: "i32",
+					type: "SinglePrimitiveFieldNode",
+					dataType: int32(),
 					name: "someField",
 					value: -100,
 				},
@@ -551,8 +724,8 @@ describe(`complex mixed`, () => {
 						dataType: "YetAnotherStruct",
 						children: [
 							{
-								type: "SingleSimpleFieldNode",
-								dataType: "f32",
+								type: "SinglePrimitiveFieldNode",
+								dataType: float(),
 								name: "testing",
 								value: -0.5,
 							},
@@ -560,8 +733,8 @@ describe(`complex mixed`, () => {
 					},
 				},
 				{
-					type: "ArraySimpleFieldNode",
-					dataType: "i16",
+					type: "ArrayPrimitiveFieldNode",
+					dataType: int16(),
 					name: "myArray",
 					children: [1000, -2000],
 				},
@@ -575,14 +748,14 @@ describe(`complex mixed`, () => {
 							dataType: "MyOtherStruct",
 							children: [
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "i8",
+									type: "SinglePrimitiveFieldNode",
+									dataType: int8(),
 									name: "bazA",
 									value: -50,
 								},
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "u8",
+									type: "SinglePrimitiveFieldNode",
+									dataType: uint8(),
 									name: "bazB",
 									value: 200,
 								},
@@ -597,24 +770,24 @@ describe(`complex mixed`, () => {
 			Foo {
 				MyStruct bar[2] = [
 					MyStruct {
-						f32 bazA = 7.75;
+						float bazA = 7.75;
 					};
 					MyStruct {
-						f32 bazA = 4.125;
+						float bazA = 4.125;
 					};
 				];
-				i32 someField = -100;
+				int32 someField = -100;
 				YetAnotherStruct yetAnother = {
-					f32 testing = -0.5;
+					float testing = -0.5;
 				};
-				i16 myArray[2] = [
+				int16 myArray[2] = [
 					1000,
 					-2000
 				];
 				MyOtherStruct barB[1] = [
 					MyOtherStruct {
-						i8 bazA = -50;
-						u8 bazB = 200;
+						int8 bazA = -50;
+						uint8 bazB = 200;
 					};
 				];
 			};
@@ -627,8 +800,8 @@ describe(`complex mixed`, () => {
 			dataType: "Foo",
 			children: [
 				{
-					type: "SingleSimpleFieldNode",
-					dataType: "i32",
+					type: "SinglePrimitiveFieldNode",
+					dataType: int32(),
 					name: "placeholder",
 					value: -100,
 				},
@@ -642,8 +815,8 @@ describe(`complex mixed`, () => {
 							dataType: "MyStruct",
 							children: [
 								{
-									type: "SingleSimpleFieldNode",
-									dataType: "f32",
+									type: "SinglePrimitiveFieldNode",
+									dataType: float(),
 									name: "bazA",
 									value: -7.75,
 								},
@@ -656,14 +829,14 @@ describe(`complex mixed`, () => {
 										dataType: "MyOtherStruct",
 										children: [
 											{
-												type: "SingleSimpleFieldNode",
-												dataType: "norm",
+												type: "SinglePrimitiveFieldNode",
+												dataType: unorm8(),
 												name: "a",
-												value: ((0 << 30) | (1023 << 20) | (511 << 10) | (511 << 0)),
+												value: 185 / 255,
 											},
 											{
-												type: "SingleSimpleFieldNode",
-												dataType: "u8",
+												type: "SinglePrimitiveFieldNode",
+												dataType: uint8(),
 												name: "b",
 												value: 10,
 											},
@@ -677,8 +850,8 @@ describe(`complex mixed`, () => {
 														dataType: "ThirdLevel",
 														children: [
 															{
-																type: "SingleSimpleFieldNode",
-																dataType: "i8",
+																type: "SinglePrimitiveFieldNode",
+																dataType: int8(),
 																name: "x",
 																value: 1,
 															},
@@ -689,8 +862,8 @@ describe(`complex mixed`, () => {
 														dataType: "ThirdLevel",
 														children: [
 															{
-																type: "SingleSimpleFieldNode",
-																dataType: "i8",
+																type: "SinglePrimitiveFieldNode",
+																dataType: int8(),
 																name: "x",
 																value: -1,
 															},
@@ -706,8 +879,8 @@ describe(`complex mixed`, () => {
 					],
 				},
 				{
-					type: "SingleSimpleFieldNode",
-					dataType: "u32",
+					type: "SinglePrimitiveFieldNode",
+					dataType: uint32(),
 					name: "anotherField",
 					value: 500,
 				},
@@ -716,25 +889,25 @@ describe(`complex mixed`, () => {
 		const text = new TextPrinter(ast).print();
 		expect(text).toBe(nice(`
 			Foo {
-				i32 placeholder = -100;
+				int32 placeholder = -100;
 				MyStruct bar[1] = [
 					MyStruct {
-						f32 bazA = -7.75;
+						float bazA = -7.75;
 						MyOtherStruct otherStruct = {
-							norm a = (x=1.000, y=-0.001, z=-0.001, w=0.000);
-							u8 b = 10;
+							unorm8 a = 0.725;
+							uint8 b = 10;
 							ThirdLevel third[2] = [
 								ThirdLevel {
-									i8 x = 1;
+									int8 x = 1;
 								};
 								ThirdLevel {
-									i8 x = -1;
+									int8 x = -1;
 								};
 							];
 						};
 					};
 				];
-				u32 anotherField = 500;
+				uint32 anotherField = 500;
 			};
 		`));
 	});

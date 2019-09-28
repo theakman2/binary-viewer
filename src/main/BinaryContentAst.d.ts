@@ -2,21 +2,23 @@ import * as FormatStringAst from "./FormatStringAst";
 
 export type Type = "simple" | "struct";
 
-export interface SingleSimpleFieldNode {
-	type: "SingleSimpleFieldNode";
-	dataType: FormatStringAst.DataType;
+export type PrimitiveValue = number | string;
+
+export interface SinglePrimitiveFieldNode {
+	type: "SinglePrimitiveFieldNode";
+	dataType: FormatStringAst.PrimitiveDataType;
 	name: string;
-	value: number;
+	value: PrimitiveValue;
 }
 
-export interface ArraySimpleFieldNode {
-	type: "ArraySimpleFieldNode";
-	dataType: FormatStringAst.DataType;
+export interface ArrayPrimitiveFieldNode {
+	type: "ArrayPrimitiveFieldNode";
+	dataType: FormatStringAst.PrimitiveDataType;
 	name: string;
-	children: number[];
+	children: PrimitiveValue[];
 }
 
-export type SimpleFieldNode = SingleSimpleFieldNode | ArraySimpleFieldNode;
+export type PrimitiveFieldNode = SinglePrimitiveFieldNode | ArrayPrimitiveFieldNode;
 
 export interface SingleStructFieldNode {
 	type: "SingleStructFieldNode";
@@ -34,7 +36,7 @@ export interface ArrayStructFieldNode {
 
 export type StructFieldNode = SingleStructFieldNode | ArrayStructFieldNode;
 
-export type FieldNode = SimpleFieldNode | StructFieldNode;
+export type FieldNode = PrimitiveFieldNode | StructFieldNode;
 
 export interface StructNode {
 	type: "StructNode";

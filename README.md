@@ -13,8 +13,8 @@ const {FormatStringParser, BinaryContentFormatter, TextPrinter} = require('binar
 const formatString = `
 
 Hello {
-	u8 x;
-	u8 y;
+	uint8 x;
+	uint8 y;
 };
 
 Vertex {
@@ -23,11 +23,11 @@ Vertex {
 };
 
 Main {
-	u32 count;
-	u8 values[count];
-	i32 foo;
+	uint32 count;
+	uint8 values[count];
+	int32 foo;
 	Vertex data[2];
-	f32 myfloat;
+	float myfloat;
 };
 
 root = Main;
@@ -70,8 +70,8 @@ const textContent = new TextPrinter(binaryContentAst, {spacer: '    ', assignmen
 `textContent` is a string with the following content:
 
 Main {
-    u32 count: 8;
-    u8 values[8]: [
+    uint32 count: 8;
+    uint8 values[8]: [
         10,
         20,
         30,
@@ -81,34 +81,36 @@ Main {
         70,
         80
     ];
-    i32 foo: 2;
+    int32 foo: 2;
     Vertex data[2]: [
         Vertex {
             Hello a: {
-                u8 x: 5;
-                u8 y: 15;
+                uint8 x: 5;
+                uint8 y: 15;
             };
             Hello b: {
-                u8 x: 25;
-                u8 y: 35;
+                uint8 x: 25;
+                uint8 y: 35;
             };
         };
         Vertex {
             Hello a: {
-                u8 x: 6;
-                u8 y: 16;
+                uint8 x: 6;
+                uint8 y: 16;
             };
             Hello b: {
-                u8 x: 26;
-                u8 y: 36;
+                uint8 x: 26;
+                uint8 y: 36;
             };
         };
     ];
-    f32 myfloat: 7294.330078125;
+    float myfloat: 7294.33;
 };
 
 */
 ```
+
+The `src/test/examples/examples.test.ts` file contains more examples.
 
 ## Building
 

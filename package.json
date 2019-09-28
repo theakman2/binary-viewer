@@ -1,7 +1,7 @@
 {
 	"name": "binary-viewer",
 	"description": "Pretty view binary content",
-	"version": "0.10.0",
+	"version": "0.11.0",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"author": {
@@ -14,7 +14,7 @@
 		"binary-viewer"
 	],
 	"scripts": {
-		"pegjs": "pegjs --plugin ./node_modules/ts-pegjs -o src/main/parser.pegjs.ts src/main/parser.pegjs",
+		"pegjs": "pegjs --plugin ./node_modules/ts-pegjs -o src/main/parser.dist.ts src/main/parser.pegjs",
 		"build": "tsc",
 		"test": "jest"
 	},

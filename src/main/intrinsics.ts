@@ -1,6 +1,6 @@
 export interface IntrinsicDefinition {
 	name: string;
-	value: (dataView: DataView, currentOffset: number) => number;
+	value: (dataView: DataView, currentBitOffset: number) => number;
 }
 
 const allowed: ReadonlyArray<IntrinsicDefinition> = [
@@ -10,7 +10,7 @@ const allowed: ReadonlyArray<IntrinsicDefinition> = [
 	},
 	{
 		name: '__LEFT__',
-		value: (dataView, currentOffset) => dataView.byteLength - currentOffset,
+		value: (dataView, currentBitOffset) => dataView.byteLength - Math.ceil(currentBitOffset / 8),
 	},
 ];
 

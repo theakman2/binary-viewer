@@ -1,13 +1,17 @@
-start = ws s:StructStatement* ws d:RootStatement ws {
+start = ignorable s:StructStatement* d:RootStatement? {
 	return {
 		structs: s,
-		root: d,
+		root: d || "Main",
 	};
 }
 
-ws "whitespace" = [ \t\n\r]*
+multi_line_comment = "/*" (!"*/" .)* "*/"
 
-Struct = ident:StructIdentifier ws "{" ws stmts:FieldStatement+ ws "}" {
+single_line_comment = '//' [^\n]*
+
+ignorable = (single_line_comment / multi_line_comment / [ \t\n\r])*
+
+Struct = ident:StructIdentifier ignorable "{" ignorable stmts:FieldStatement+ ignorable "}" {
 	return {
 		type: 'Struct',
 		identifier: ident,
@@ -15,51 +19,94 @@ Struct = ident:StructIdentifier ws "{" ws stmts:FieldStatement+ ws "}" {
 	};
 }
 
+IntDataTypeShape = v:[sun] {
+	switch (v) {
+		case 's': return 'signed';
+		case 'u': return 'unsigned';
+		case 'n': return 'normal';
+	}
+}
+
+IntDataTypeSize = v:([1-9][0-9]*) { return parseInt(v[0] + v[1].join(), 10); }
+
+IntDataTypeMax = "int" / "norm"
+
+IntDataType = s:IntDataTypeShape? m:IntDataTypeMax z:IntDataTypeSize {
+	return {
+		type: 'IntDataType',
+		shape: s || 'signed',
+		max: m,
+		size: z,
+	};
+}
+
+FloatDataType = v:('float' / 'double') {
+	return {
+		type: 'FloatDataType',
+		size: (v === 'float') ? 32 : 64,
+	};
+}
+
+FixedLengthStringDataType = 'string' ignorable '(' ignorable v:([0-9]+) ignorable ')' {
+	return {
+		type: 'FixedLengthStringDataType',
+		size: parseInt(v, 10),
+	};
+}
+
+VariableLengthStringDataType = 'string' {
+	return {
+		type: 'VariableLengthStringDataType',
+	};
+}
+
+PrimitiveDataType = IntDataType / FloatDataType / FixedLengthStringDataType / VariableLengthStringDataType
+
 StructIdentifier = ident:([A-Z][a-zA-Z0-9_]*) { return ident[0] + ident[1].join(''); }
 
 Identifier = ident:([a-zA-Z][a-zA-Z0-9_]*) { return ident[0] + ident[1].join(''); }
 
 Intrinsic = v:("__" [A-Z0-9]+ "__") { return v[0] + v[1].join('') + v[2]; }
 
-SingleSimpleVarStatement = ti:DataType ws i:Identifier ws ";" ws {
+SinglePrimitiveVarStatement = ti:PrimitiveDataType ignorable i:Identifier ignorable ";" ignorable {
 	return {
-		type: 'SingleSimpleVarStatement',
-		kind: ti,
+		type: 'SinglePrimitiveVarStatement',
+		dataType: ti,
 		identifier: i,
 	};
 }
 
-SingleStructVarStatement = ti:StructIdentifier ws i:Identifier ws ";" ws {
+SingleStructVarStatement = ti:StructIdentifier ignorable i:Identifier ignorable ";" ignorable {
 	return {
 		type: 'SingleStructVarStatement',
-		kind: ti,
+		dataType: ti,
 		identifier: i,
 	};
 }
 
-ArraySimpleVarStatement = t:DataType ws i:Identifier ws "[" ws v:(Integer/Identifier/Intrinsic) ws "]" ws ";" ws {
+ArrayPrimitiveVarStatement = t:PrimitiveDataType ignorable i:Identifier ignorable "[" ignorable v:(Integer/Identifier/Intrinsic) ignorable "]" ignorable ";" ignorable {
 	return {
-		type: 'ArraySimpleVarStatement',
-		kind: t,
+		type: 'ArrayPrimitiveVarStatement',
+		dataType: t,
 		identifier: i,
 		count: v,
 	};
 }
 
-ArrayStructVarStatement = t:StructIdentifier ws i:Identifier ws "[" ws v:(Integer/Identifier/Intrinsic) ws "]" ws ";" ws {
+ArrayStructVarStatement = t:StructIdentifier ignorable i:Identifier ignorable "[" ignorable v:(Integer/Identifier/Intrinsic) ignorable "]" ignorable ";" ignorable {
 	return {
 		type: 'ArrayStructVarStatement',
-		kind: t,
+		dataType: t,
 		identifier: i,
 		count: v,
 	};
 }
 
-StructStatement = t:Struct ws ";" ws {
+StructStatement = t:Struct ignorable ";" ignorable {
 	return t;
 }
 
-RootStatement = "root" ws "=" ws i:Identifier ws ";" ws {
+RootStatement = "root" ignorable "=" ignorable i:Identifier ignorable ";" ignorable {
 	return i;
 }
 
@@ -67,8 +114,4 @@ Integer = v:[0-9]+ {
 	return parseInt(v, 10);
 }
 
-FieldStatement = SingleSimpleVarStatement / SingleStructVarStatement / ArraySimpleVarStatement / ArrayStructVarStatement
-
-Statement = FieldStatement / StructStatement / RootStatement
-
-DataType = "u8" / "u16" / "u32" / "i8" / "i16" / "i32" / "f32" / "f64" / "norm"
+FieldStatement = SinglePrimitiveVarStatement / SingleStructVarStatement / ArrayPrimitiveVarStatement / ArrayStructVarStatement
