@@ -32,11 +32,11 @@ IntDataTypeShape = v:[sun] {
 	}
 }
 
-IntDataTypeSize = v:([1-9][0-9]*) { return parseInt(v[0] + v[1].join(), 10); }
+IntDataTypeMaxScale = v:Integer "scale" { return v; }
 
-IntDataTypeMax = "int" / "norm"
+IntDataTypeMax = "int" / "norm" / IntDataTypeMaxScale
 
-IntDataType = s:IntDataTypeShape? m:IntDataTypeMax z:IntDataTypeSize {
+IntDataType = s:IntDataTypeShape? m:IntDataTypeMax z:Integer {
 	return {
 		type: 'IntDataType',
 		shape: s || 'signed',
@@ -115,8 +115,8 @@ RootStatement = "root" Ignorable "=" Ignorable i:Identifier Ignorable ";" Ignora
 	return i;
 }
 
-Integer = v:[0-9]+ {
-	return parseInt(v, 10);
+Integer = v:([0-9]+) {
+	return parseInt(v.join(''), 10);
 }
 
 FieldStatement = a:Attr* f:(SinglePrimitiveVarStatement / SingleStructVarStatement / ArrayPrimitiveVarStatement / ArrayStructVarStatement) {

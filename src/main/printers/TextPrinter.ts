@@ -27,7 +27,14 @@ function printPrimitiveDataType(dataType: FormatStringAst.PrimitiveDataType): st
 					ret += 'u';
 					break;
 			}
-			ret += dataType.max;
+			if (typeof dataType.max === "string") {
+				ret += dataType.max;
+			} else {
+				if (dataType.shape === 'signed') {
+					ret += 's';
+				}
+				ret += dataType.max.toString() + "scale";
+			}
 			ret += dataType.size.toString();
 			return ret;
 		}

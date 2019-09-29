@@ -125,17 +125,17 @@ export class BinaryContentFormatter {
 		} else if (dataType.shape === "normal") {
 			value -= (signedMax + 1);
 		}
-		
-		const unsignedMax = 2 ** dataType.size - 1;
 
-		if (dataType.max === "norm") {
+		if ((dataType.max === "norm") || (typeof dataType.max === "number")) {
+			const logScale:number = (dataType.max === "norm") ? 0 : dataType.max;
+			const scale = 1 << logScale;
 			if (dataType.shape === "unsigned") {
-				value /= unsignedMax;
+				value = scale * (value / (2 ** dataType.size - 1));
 			} else {
-				value = Math.max(value / signedMax, -1.0);
+				value = scale * Math.max(value / signedMax, -1.0);
 			}
 		}
-
+		
 		return {
 			end: this._bitOffset + dataType.size,
 			value: value,

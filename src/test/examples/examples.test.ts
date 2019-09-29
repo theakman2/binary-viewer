@@ -116,6 +116,9 @@ describe(`primitive types`, () => {
 
 		dv.setUint16(6, 1234, true);
 
+		dv.setInt16(8, -12345, true);
+		dv.setInt16(10, 22110, true);
+
 		expect(parse(
 			`
 				// Structs may be freely defined and subsequently used.
@@ -140,7 +143,7 @@ describe(`primitive types`, () => {
 					 * 'Normal' 9-bit integer.
 					 * The value is given by double(U) - (2 ** (B - 1)), where:
 					 * B is the bit-width (in this case, 9)
-					 * U is the value when treated as an unsigned integer of bit-wdith B.
+					 * U is the value when treated as an unsigned integer of bit-width B.
 					 **/
 					nint9 y;
 
@@ -149,10 +152,38 @@ describe(`primitive types`, () => {
 					 * The value is given by: Math.max(-1.0, (double(U) - X) / (X - 1))
 					 * Where:
 					 * B is the bitwidth (in this case, 16)
-					 * U is the value when treated as an unsigned integer of bit-wdith B.
+					 * U is the value when treated as an unsigned integer of bit-width B.
 					 * X = 2 ** (B - 1)
 					 **/
 					nnorm16 z;
+
+					/**
+					 * Scales the 16-bit signed integer using the following formula:
+					 * 
+					 * S * Math.max(V / M, -1.0)
+					 * 
+					 * V is the value when treated as signed integer of bit-width 16.
+					 * S = 1 << 12
+					 * M is the highest signed value of a twos-complement integer of bit-width 16.
+					 * In this case, M = 32767
+					 * 
+					 * So: -4096.0 <= t <= 4096.0
+					 **/
+					s12scale16 t;
+
+					/**
+					 * Scales the 16-bit unsigned integer using the following formula:
+					 * 
+					 * V * S / M
+					 * 
+					 * V is the value when treated as signed integer of bit-width 16.
+					 * S = 1 << 6
+					 * M is the highest value of a 16-bit unsigned integer.
+					 * In this case, M = 65535
+					 * 
+					 * So: 0 <= t <= 64.0
+					 **/
+					u6scale16 u;
 				};
 			`,
 			dv
@@ -167,6 +198,8 @@ describe(`primitive types`, () => {
 				unorm7 x = 0.283;
 				nint9 y = 32;
 				nnorm16 z = -0.962;
+				s12scale16 t = -1543.172;
+				u6scale16 u = 21.592;
 			};
 		`));
 	});

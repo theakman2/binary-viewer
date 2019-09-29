@@ -1,7 +1,7 @@
 {
 	"name": "binary-viewer",
 	"description": "Pretty view binary content",
-	"version": "0.12.0",
+	"version": "0.13.0",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"author": {

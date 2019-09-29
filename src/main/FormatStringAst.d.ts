@@ -1,6 +1,6 @@
 export type IntDataShape = "signed" | "unsigned" | "normal";
 
-export type IntDataMax = "int" | "norm";
+export type IntDataMax = "int" | "norm" | number;
 
 export interface IntDataType {
 	type: "IntDataType";
